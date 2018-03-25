@@ -21,13 +21,13 @@ public class Park {
 	String manageNo; // 관리 번호
 	String name; // 공원 이름
 
-	@DBRef(db="seongnam_city_park")
+	@DBRef(db="seongnam_city_park", lazy=false)
 	Kind kind; // 공원 종류
 
 	String oldAddress; // 지번주소
 	String newAddress; // 도로명주소
 
-	Position position; // 위치(경도, 위도)
+	Position position; // 위치(위도, 경도)
 	double area; // 면적
 
 	List<String> jymFacility; // 운동시설
@@ -39,7 +39,7 @@ public class Park {
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	Date designateDate; // 지정고시일
 
-	@DBRef(db="seongnam_city_park")
+	@DBRef(db="seongnam_city_park", lazy=false)
 	Agency agency; // 기관
 
 	String callPhone; // 연락처

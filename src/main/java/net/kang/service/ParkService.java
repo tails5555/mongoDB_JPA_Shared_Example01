@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -15,6 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import net.kang.domain.Kind;
 import net.kang.domain.Park;
 import net.kang.model.Position;
 import net.kang.repository.AgencyRepository;
@@ -26,12 +29,7 @@ public class ParkService {
 	@Autowired AgencyRepository agencyRepository;
 	@Autowired KindRepository kindRepository;
 	@Autowired ParkRepository parkRepository;
-	public List<Park> findAll(){
-		return parkRepository.findAll();
-	}
-	public Optional<Park> findByManageNo(String manageNo){
-		return parkRepository.findByManageNo(manageNo);
-	}
+
 	public List<String> facilityList(String context){
 		List<String> tmpFacilityList=new ArrayList<String>();
 		if(context.split(", ").length>0) {
@@ -44,6 +42,7 @@ public class ParkService {
 		}
 		return tmpFacilityList;
 	}
+
 	public void excelUpload() throws IOException, ParseException {
 		FileInputStream fis=new FileInputStream("C:\\경기도_성남시_도시공원정보.xls");
 		HSSFWorkbook workbook=new HSSFWorkbook(fis);
@@ -128,5 +127,41 @@ public class ParkService {
 				parkRepository.save(park);
 			}
 		}
+	}
+
+	public void deleteAll() {
+		parkRepository.deleteAll();
+	}
+
+	public List<Park> findAll(){
+		return parkRepository.findAll();
+	}
+
+	public Optional<Park> findByManageNo(String manageNo){
+		return parkRepository.findByManageNo(manageNo);
+	}
+
+	public List<Park> findByConvFacilityContains(String[] convFacilities){
+		return parkRepository.findByConvFacilityContains(convFacilities);
+	}
+
+	public List<Park> findByCultFacilityContains(String[] cultFacilities){
+		return parkRepository.findByCultFacilityContains(cultFacilities);
+	}
+
+	public List<Park> findByNameContaining(String name){
+		return parkRepository.findByNameContaining(name);
+	}
+
+	public List<Park> findByAreaBetween(double area1, double area2){
+		return parkRepository.findByAreaBetween(area1, area2);
+	}
+
+	public Map<Kind, Long> countByKind(){
+		Map<Kind, Long> countMap=new HashMap<Kind, Long>();
+		for(Kind k : kindRepository.findAll()) {
+			countMap.put(k, parkRepository.countByKind(k));
+		}
+		return countMap;
 	}
 }
