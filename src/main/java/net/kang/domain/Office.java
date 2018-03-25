@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Document(collection="office")
-public class Office {
+public class Office { // 시-구청 데이터. 본인이 새로 만들었음.
 	@Id
 	String id;
 	String name; // 시-구청 이름

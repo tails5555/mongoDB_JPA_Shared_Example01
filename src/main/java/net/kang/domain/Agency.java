@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 @Data
 @Document(collection="agency")
-public class Agency {
+public class Agency { // 기관. 본인이 직접 만듬.
 	@Id
 	String id;
 	String name; // 기관 이름

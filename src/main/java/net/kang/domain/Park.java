@@ -14,7 +14,7 @@ import net.kang.model.Position;
 
 @Data
 @Document(collection="park")
-public class Park {
+public class Park { // 공원 데이터
 	@Id
 	String id;
 

@@ -18,17 +18,17 @@ import net.kang.service.KindService;
 public class KindController {
 	@Autowired KindService kindService;
 
-	@RequestMapping("findAll")
+	@RequestMapping("findAll") // 공원의 종류들을 출력
 	public List<Kind> findAll(){
 		return kindService.findAll();
 	}
 
-	@RequestMapping("findOne/{id}")
+	@RequestMapping("findOne/{id}") // ID로 공원의 종류 검색
 	public Kind findOne(@PathVariable("id") String id) {
 		return kindService.findOne(id).orElse(new Kind());
 	}
 
-	@RequestMapping("findOne/parkList/{id}")
+	@RequestMapping("findOne/parkList/{id}") // ID로 공원의 종류에 소속된 공원 목록들을 출력
 	public List<Park> findOneAndParkFindAll(@PathVariable("id") String id){
 		return kindService.findOneWithParkFindAll(id);
 	}

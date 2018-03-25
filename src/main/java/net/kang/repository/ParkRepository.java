@@ -18,4 +18,5 @@ public interface ParkRepository extends MongoRepository<Park, String>{
 	List<Park> findByAreaBetween(double area1, double area2);
 	List<Park> findByCultFacilityContains(String[] cultFacilities);
 	List<Park> findByConvFacilityContains(String[] convFacilities);
+	void deleteByManageNo(String manageNo);
 }

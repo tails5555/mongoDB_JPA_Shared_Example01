@@ -12,7 +12,7 @@ import lombok.Data;
 @CompoundIndexes({
     @CompoundIndex(name = "name_unique", def = "{'name' : 1}", unique = true)
 })
-public class Kind {
+public class Kind { // 공원 종류. 본인이 새로 만들었음.
 	@Id
 	String id;
 	String name; // 공원 종류 이름

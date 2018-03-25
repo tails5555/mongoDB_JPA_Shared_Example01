@@ -4,33 +4,32 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.kang.domain.Agency;
-import net.kang.domain.Office;
-import net.kang.repository.AgencyRepository;
-import net.kang.repository.OfficeRepository;
+import net.kang.domain.Park;
+import net.kang.service.AgencyService;
 
 @RestController
 @CrossOrigin
 @RequestMapping("agency")
 public class AgencyController {
-	@Autowired AgencyRepository agencyRepository;
-	@Autowired OfficeRepository officeRepository;
-	@RequestMapping("findAll")
+	@Autowired AgencyService agencyService;
+
+	@RequestMapping("findAll") // 현재 저장된 모든 기관들을 검색
 	public List<Agency> findAll(){
-		return agencyRepository.findAll();
+		return agencyService.findAll();
 	}
-	@RequestMapping("office")
-	public List<Office> findAllOffice(){
-		return officeRepository.findAll();
+
+	@RequestMapping("findOne/{id}") // ID를 통한 기관 검색
+	public Agency findOne(@PathVariable("id") String id){
+		return agencyService.findOne(id).orElse(new Agency());
 	}
-	@RequestMapping("save")
-	public void save() {
-		Agency agency=new Agency();
-		agency.setName("꽈꽈");
-		agency.setOffice(officeRepository.findById("5ab6005c4421072258a1bd45").get());
-		agencyRepository.insert(agency);
+
+	@RequestMapping("findOne/parkList/{id}") // 현재 기관이 관리하는 공원 목록을 ID를 통하여 검색
+	public List<Park> findOneWithParkFindAll(@PathVariable("id") String id){
+		return agencyService.findOneAndParkFindAll(id);
 	}
 }
