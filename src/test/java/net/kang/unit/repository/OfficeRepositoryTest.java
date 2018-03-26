@@ -1,9 +1,15 @@
 package net.kang.unit.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -33,8 +39,77 @@ public class OfficeRepositoryTest {
 			Office office=new Office();
 			office.setName(String.format("시청%02d", k));
 			office.setAddress(String.format("시청주소%02d", k));
-			office.setHomepage("http://asdasf");
+			office.setHomepage(String.format("홈페이지%02d", k));
+			office.setZipCode(String.format("우편번호%02d", k));
+			officeRepository.insert(office);
 		}
 	}
 
+	@Test
+	public void findAllTest() {
+		List<Office> findAll=officeRepository.findAll();
+		assertEquals(findAll.size(), tmpList.size()+QTY);
+	}
+
+	@Test
+	public void findOneTest() {
+		List<Office> findAll=officeRepository.findAll();
+		int getIdx=tmpList.size()+random.nextInt(QTY);
+		Office office=findAll.get(getIdx);
+		Optional<Office> findOne=officeRepository.findById(office.getId());
+		Office result=findOne.get();
+		assertEquals(office, result);
+	}
+
+	@Test
+	public void insertTest() {
+		List<Office> beforeInsertList=officeRepository.findAll();
+		Office office=new Office();
+		office.setName("시청05");
+		office.setAddress("시청주소05");
+		office.setHomepage("홈페이지05");
+		office.setZipCode("우편번호05");
+		officeRepository.insert(office);
+		List<Office> afterInsertList=officeRepository.findAll();
+		afterInsertList.removeAll(beforeInsertList);
+		assertTrue(officeRepository.existsById(afterInsertList.get(0).getId()));
+	}
+
+	@Test
+	public void updateTest() {
+		List<Office> beforeUpdateList=officeRepository.findAll();
+		int getIdx=tmpList.size()+random.nextInt(QTY);
+		Office office=beforeUpdateList.remove(getIdx);
+		office.setName("시청TEMP");
+		office.setHomepage("홈페이지TEMP");
+		office.setAddress("시청주소TEMP");
+		office.setZipCode("우편번호TEMP");
+		officeRepository.save(office);
+		List<Office> afterUpdateList=officeRepository.findAll();
+		assertTrue(afterUpdateList.contains(office));
+	}
+
+	@Test
+	public void deleteTest() {
+		List<Office> beforeDeleteList=officeRepository.findAll();
+		int getIdx=tmpList.size()+random.nextInt(QTY);
+		Office office=beforeDeleteList.remove(getIdx);
+		officeRepository.deleteById(office.getId());
+		List<Office> afterDeleteList=officeRepository.findAll();
+		assertTrue(!afterDeleteList.contains(office));
+	}
+
+	@Test
+	public void deleteByNameContainingTest() {
+		List<Office> beforeDeleteList=officeRepository.findAll();
+		officeRepository.deleteByNameContaining("시청");
+		List<Office> afterDeleteList=officeRepository.findAll();
+		beforeDeleteList.removeAll(afterDeleteList);
+		assertEquals(beforeDeleteList.size(), QTY);
+	}
+
+	@After
+	public void afterTest() {
+		officeRepository.deleteByNameContaining("시청");
+	}
 }
