@@ -8,4 +8,5 @@ import net.kang.domain.Kind;
 
 public interface KindRepository extends MongoRepository<Kind, String>{
 	Optional<Kind> findByName(String name);
+	void deleteByNameContaining(String name);
 }
