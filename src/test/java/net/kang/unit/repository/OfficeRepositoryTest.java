@@ -37,7 +37,7 @@ public class OfficeRepositoryTest {
 		tmpList=officeRepository.findAll();
 		for(int k=0;k<QTY;k++) {
 			Office office=new Office();
-			office.setName(String.format("시청%02d", k));
+			office.setName(String.format("시구청%02d", k));
 			office.setAddress(String.format("시청주소%02d", k));
 			office.setHomepage(String.format("홈페이지%02d", k));
 			office.setZipCode(String.format("우편번호%02d", k));
@@ -65,7 +65,7 @@ public class OfficeRepositoryTest {
 	public void insertTest() {
 		List<Office> beforeInsertList=officeRepository.findAll();
 		Office office=new Office();
-		office.setName("시청05");
+		office.setName("시구청05");
 		office.setAddress("시청주소05");
 		office.setHomepage("홈페이지05");
 		office.setZipCode("우편번호05");
@@ -80,7 +80,7 @@ public class OfficeRepositoryTest {
 		List<Office> beforeUpdateList=officeRepository.findAll();
 		int getIdx=tmpList.size()+random.nextInt(QTY);
 		Office office=beforeUpdateList.remove(getIdx);
-		office.setName("시청TEMP");
+		office.setName("시구청TEMP");
 		office.setHomepage("홈페이지TEMP");
 		office.setAddress("시청주소TEMP");
 		office.setZipCode("우편번호TEMP");
@@ -102,7 +102,7 @@ public class OfficeRepositoryTest {
 	@Test
 	public void deleteByNameContainingTest() {
 		List<Office> beforeDeleteList=officeRepository.findAll();
-		officeRepository.deleteByNameContaining("시청");
+		officeRepository.deleteByNameContaining("시구청");
 		List<Office> afterDeleteList=officeRepository.findAll();
 		beforeDeleteList.removeAll(afterDeleteList);
 		assertEquals(beforeDeleteList.size(), QTY);
@@ -110,6 +110,6 @@ public class OfficeRepositoryTest {
 
 	@After
 	public void afterTest() {
-		officeRepository.deleteByNameContaining("시청");
+		officeRepository.deleteByNameContaining("시구청");
 	}
 }

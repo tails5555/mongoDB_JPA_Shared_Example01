@@ -29,4 +29,22 @@ public class AgencyService {
 		}
 		return new ArrayList<Park>();
 	}
+	public boolean insert(Agency agency) {
+		if(!agencyRepository.existsById(agency.getId())) {
+			agencyRepository.insert(agency);
+			return true;
+		}else return false;
+	}
+	public boolean update(Agency agency) {
+		if(agencyRepository.existsById(agency.getId())) {
+			agencyRepository.save(agency);
+			return true;
+		}else return false;
+	}
+	public boolean delete(String id) {
+		if(agencyRepository.existsById(id)) {
+			agencyRepository.deleteById(id);
+			return true;
+		}else return false;
+	}
 }
