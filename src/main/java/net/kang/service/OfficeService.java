@@ -29,4 +29,22 @@ public class OfficeService {
 		}
 		return new ArrayList<Agency>();
 	}
+	public boolean insert(Office office) {
+		if(!officeRepository.existsById(office.getId())) {
+			officeRepository.insert(office);
+			return true;
+		}else return false;
+	}
+	public boolean update(Office office) {
+		if(officeRepository.existsById(office.getId())) {
+			officeRepository.save(office);
+			return true;
+		}else return false;
+	}
+	public boolean delete(String id) {
+		if(officeRepository.existsById(id)) {
+			officeRepository.deleteById(id);
+			return true;
+		}else return false;
+	}
 }

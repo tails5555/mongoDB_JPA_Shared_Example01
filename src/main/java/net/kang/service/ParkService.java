@@ -164,4 +164,25 @@ public class ParkService {
 		}
 		return countMap;
 	}
+
+	public boolean insert(Park park) {
+		if(!parkRepository.existsById(park.getId())) {
+			parkRepository.insert(park);
+			return true;
+		}else return false;
+	}
+
+	public boolean update(Park park) {
+		if(parkRepository.existsById(park.getId())) {
+			parkRepository.save(park);
+			return true;
+		}else return false;
+	}
+
+	public boolean delete(String id) {
+		if(parkRepository.existsById(id)) {
+			parkRepository.deleteById(id);
+			return true;
+		}else return false;
+	}
 }

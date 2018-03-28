@@ -49,6 +49,12 @@ public class AgencyServiceTest {
 	@Mock ParkRepository parkRepository;
 	@InjectMocks AgencyService agencyService;
 
+	@Before
+	public void initialize() {
+		MockitoAnnotations.initMocks(this);
+		mockMvc=MockMvcBuilders.standaloneSetup(agencyService).build();
+	}
+
 	public List<Office> officeList(){
 		List<Office> officeList=new ArrayList<Office>();
 		for(int k=0;k<OFFICE_QTY;k++) {
@@ -61,12 +67,6 @@ public class AgencyServiceTest {
 			officeList.add(office);
 		}
 		return officeList;
-	}
-
-	@Before
-	public void initialize() {
-		MockitoAnnotations.initMocks(this);
-		mockMvc=MockMvcBuilders.standaloneSetup(agencyService).build();
 	}
 
 	public List<Agency> agencyList(){
@@ -85,9 +85,10 @@ public class AgencyServiceTest {
 
 	@Test
 	public void findAllTest() {
-		when(agencyRepository.findAll()).thenReturn(agencyList());
-		List<Agency> findAll=agencyService.findAll();
-		assertEquals(findAll.size(), AGENCY_QTY);
+		List<Agency> tmpResult=agencyList();
+		when(agencyRepository.findAll()).thenReturn(tmpResult);
+		List<Agency> findAllResult=agencyService.findAll();
+		assertEquals(findAllResult, tmpResult);
 	}
 
 	public Agency findOneAgency() {
@@ -100,10 +101,10 @@ public class AgencyServiceTest {
 
 	@Test
 	public void findOneTest() {
-		Agency findOneAgency=findOneAgency();
-		when(agencyRepository.findById("1")).thenReturn(Optional.of(findOneAgency));
-		Optional<Agency> agency=agencyService.findOne(String.format("%d", 1));
-		assertEquals(findOneAgency, agency.get());
+		Agency tmpResult=findOneAgency();
+		when(agencyRepository.findById("1")).thenReturn(Optional.of(tmpResult));
+		Optional<Agency> findOneResult=agencyService.findOne(String.format("%d", 1));
+		assertEquals(tmpResult, findOneResult.get());
 	}
 
 	public List<Park> parkList(Agency tmpAgency){

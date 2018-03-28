@@ -16,11 +16,11 @@ import net.kang.repository.ParkRepository;
 public class KindService {
 	@Autowired KindRepository kindRepository;
 	@Autowired ParkRepository parkRepository;
-	public Optional<Kind> findOne(String id){
-		return kindRepository.findById(id);
-	}
 	public List<Kind> findAll(){
 		return kindRepository.findAll();
+	}
+	public Optional<Kind> findOne(String id){
+		return kindRepository.findById(id);
 	}
 	public List<Park> findOneWithParkFindAll(String id){
 		Optional<Kind> kind=kindRepository.findById(id);
@@ -28,5 +28,23 @@ public class KindService {
 			return parkRepository.findByKind(kind.get());
 		}
 		return new ArrayList<Park>();
+	}
+	public boolean insert(Kind kind) {
+		if(!kindRepository.existsById(kind.getId())) {
+			kindRepository.insert(kind);
+			return true;
+		}else return false;
+	}
+	public boolean update(Kind kind) {
+		if(kindRepository.existsById(kind.getId())) {
+			kindRepository.save(kind);
+			return true;
+		}else return false;
+	}
+	public boolean delete(String id) {
+		if(kindRepository.existsById(id)) {
+			kindRepository.deleteById(id);
+			return true;
+		}else return false;
 	}
 }
