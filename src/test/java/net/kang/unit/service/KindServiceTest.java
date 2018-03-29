@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +39,6 @@ import net.kang.service.KindService;
 public class KindServiceTest {
 	static final int KIND_QTY=5;
 	static final int PARK_QTY=10;
-	static Random random=new Random();
-	static List<Kind> tmpKindList;
 	MockMvc mockMvc;
 	@Mock KindRepository kindRepository;
 	@Mock ParkRepository parkRepository;

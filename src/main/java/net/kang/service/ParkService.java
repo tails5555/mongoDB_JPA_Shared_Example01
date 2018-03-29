@@ -129,12 +129,12 @@ public class ParkService {
 		}
 	}
 
-	public void deleteAll() {
-		parkRepository.deleteAll();
-	}
-
 	public List<Park> findAll(){
 		return parkRepository.findAll();
+	}
+
+	public Optional<Park> findOne(String id){
+		return parkRepository.findById(id);
 	}
 
 	public Optional<Park> findByManageNo(String manageNo){
@@ -182,6 +182,13 @@ public class ParkService {
 	public boolean delete(String id) {
 		if(parkRepository.existsById(id)) {
 			parkRepository.deleteById(id);
+			return true;
+		}else return false;
+	}
+
+	public boolean deleteAll() {
+		if(!parkRepository.findAll().isEmpty()) {
+			parkRepository.deleteAll();
 			return true;
 		}else return false;
 	}

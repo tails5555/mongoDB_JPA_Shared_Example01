@@ -43,7 +43,6 @@ public class AgencyServiceTest {
 	static final int OFFICE_QTY=2;
 	static final int PARK_QTY=10;
 	static Random random=new Random();
-	static List<Agency> tmpAgencyList;
 	MockMvc mockMvc;
 	@Mock AgencyRepository agencyRepository;
 	@Mock ParkRepository parkRepository;
@@ -79,7 +78,6 @@ public class AgencyServiceTest {
 			agency.setOffice(office);
 			agencyList.add(agency);
 		}
-		tmpAgencyList=agencyList;
 		return agencyList;
 	}
 
