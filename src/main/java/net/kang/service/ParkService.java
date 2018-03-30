@@ -17,8 +17,10 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import net.kang.domain.Agency;
 import net.kang.domain.Kind;
 import net.kang.domain.Park;
+import net.kang.model.ParkForm;
 import net.kang.model.Position;
 import net.kang.repository.AgencyRepository;
 import net.kang.repository.KindRepository;
@@ -51,7 +53,7 @@ public class ParkService {
 		for(int k=1;k<rows;k++) {
 			Park park=new Park();
 			HSSFRow row=sheet.getRow(k);
-			HSSFCell cell=row.getCell(0);
+			HSSFCell cell=row.getCell(0); // 대부분 공공데이터에서 제공하는 소스 코드는 아쉽게도 XLS 파일로 제공하기 때문에 HSSF를 이용해서 할 수 밖에 없다.
 			park.setManageNo(cell.getRichStringCellValue().toString());
 
 			cell=row.getCell(1);
@@ -165,15 +167,74 @@ public class ParkService {
 		return countMap;
 	}
 
-	public boolean insert(Park park) {
-		if(!parkRepository.existsById(park.getId())) {
-			parkRepository.insert(park);
-			return true;
-		}else return false;
+	public Map<Agency, Long> countByAgency(){
+		Map<Agency, Long> countMap=new HashMap<Agency, Long>();
+		for(Agency a : agencyRepository.findAll()) {
+			countMap.put(a, parkRepository.countByAgency(a));
+		}
+		return countMap;
 	}
 
-	public boolean update(Park park) {
-		if(parkRepository.existsById(park.getId())) {
+	public Park formToPark(ParkForm parkForm, Agency agency, Kind kind) {
+		Park park=new Park();
+		park.setName(parkForm.getName());
+		park.setManageNo(parkForm.getManageNo());
+		park.setKind(kind);
+		park.setOldAddress(parkForm.getOldAddress());
+		park.setNewAddress(parkForm.getNewAddress());
+		park.setPosition(new Position(parkForm.getPosX(), parkForm.getPosY()));
+		park.setArea(parkForm.getArea());
+		park.setJymFacility(parkForm.getJymFacility());
+		park.setPlayFacility(parkForm.getPlayFacility());
+		park.setConvFacility(parkForm.getConvFacility());
+		park.setCultFacility(parkForm.getCultFacility());
+		park.setAnotFacility(parkForm.getAnotFacility());
+		park.setDesignateDate(parkForm.getDesignateDate());
+		park.setAgency(agency);
+		park.setCallPhone(parkForm.getCallPhone());
+		return park;
+	}
+
+	public ParkForm parkToForm(Park park) {
+		ParkForm parkForm=new ParkForm();
+		parkForm.setParkId(park.getId());;
+		parkForm.setName(park.getName());
+		parkForm.setManageNo(park.getManageNo());
+		parkForm.setKindId(park.getKind().getId());
+		parkForm.setOldAddress(park.getOldAddress());
+		parkForm.setNewAddress(park.getNewAddress());
+		parkForm.setPosX(park.getPosition().getPosX());
+		parkForm.setPosX(park.getPosition().getPosY());
+		parkForm.setArea(park.getArea());
+		parkForm.setJymFacility(park.getJymFacility());
+		parkForm.setPlayFacility(park.getPlayFacility());
+		parkForm.setConvFacility(park.getConvFacility());
+		parkForm.setCultFacility(park.getCultFacility());
+		parkForm.setAnotFacility(park.getAnotFacility());
+		parkForm.setDesignateDate(park.getDesignateDate());
+		parkForm.setAgencyId(park.getAgency().getId());
+		parkForm.setCallPhone(park.getCallPhone());
+		return parkForm;
+	}
+
+	public boolean insert(ParkForm parkForm) {
+		Kind kind=kindRepository.findById(parkForm.getParkId()).orElse(new Kind());
+		Agency agency=agencyRepository.findById(parkForm.getAgencyId()).orElse(new Agency());
+		if(!kind.equals(new Kind()) && !agency.equals(new Agency())) {
+			Park park=formToPark(parkForm, agency, kind);
+			parkRepository.insert(park);
+			return true;
+		}
+		else return false;
+	}
+
+	public boolean update(ParkForm parkForm) {
+		Kind kind=kindRepository.findById(parkForm.getParkId()).orElse(new Kind());
+		Agency agency=agencyRepository.findById(parkForm.getAgencyId()).orElse(new Agency());
+		if(!parkRepository.existsById(parkForm.getParkId())) {
+			return false;
+		}else if(!kind.equals(new Kind()) && !agency.equals(new Agency())) {
+			Park park=formToPark(parkForm, agency, kind);
 			parkRepository.save(park);
 			return true;
 		}else return false;
@@ -189,6 +250,13 @@ public class ParkService {
 	public boolean deleteAll() {
 		if(!parkRepository.findAll().isEmpty()) {
 			parkRepository.deleteAll();
+			return true;
+		}else return false;
+	}
+
+	public boolean deleteByManageNo(String manageNo) {
+		if(!parkRepository.findByManageNo(manageNo).orElse(new Park()).equals(new Park())) {
+			parkRepository.deleteByManageNo(manageNo);
 			return true;
 		}else return false;
 	}

@@ -30,8 +30,10 @@ import net.kang.domain.Agency;
 import net.kang.domain.Kind;
 import net.kang.domain.Office;
 import net.kang.domain.Park;
+import net.kang.model.AgencyForm;
 import net.kang.model.Position;
 import net.kang.repository.AgencyRepository;
+import net.kang.repository.OfficeRepository;
 import net.kang.repository.ParkRepository;
 import net.kang.service.AgencyService;
 
@@ -46,6 +48,7 @@ public class AgencyServiceTest {
 	MockMvc mockMvc;
 	@Mock AgencyRepository agencyRepository;
 	@Mock ParkRepository parkRepository;
+	@Mock OfficeRepository officeRepository;
 	@InjectMocks AgencyService agencyService;
 
 	@Before
@@ -58,7 +61,7 @@ public class AgencyServiceTest {
 		List<Office> officeList=new ArrayList<Office>();
 		for(int k=0;k<OFFICE_QTY;k++) {
 			Office office=new Office();
-			office.setId(String.format("%d", k));
+			office.setId(String.format("%d", k+1));
 			office.setName(String.format("시청%02d", k));
 			office.setAddress(String.format("주소%02d", k));
 			office.setHomepage(String.format("홈페이지%02d", k));
@@ -74,7 +77,7 @@ public class AgencyServiceTest {
 			Agency agency=new Agency();
 			agency.setId(String.format("%d", k+1));
 			agency.setName(String.format("기관%02d", k));
-			Office office=officeList().get(random.nextInt(OFFICE_QTY));
+			Office office=officeList().get(0);
 			agency.setOffice(office);
 			agencyList.add(agency);
 		}
@@ -92,8 +95,8 @@ public class AgencyServiceTest {
 	public Agency findOneAgency() {
 		Agency agency=new Agency();
 		agency.setId("1");
-		agency.setName("시구청01");
-		agency.setOffice(officeList().get(random.nextInt(OFFICE_QTY)));
+		agency.setName("기관01");
+		agency.setOffice(officeList().get(0));
 		return agency;
 	}
 
@@ -147,35 +150,80 @@ public class AgencyServiceTest {
 	}
 
 	@Test
+	public void findByNameContainingTestIsNotEmptyTest() {
+		List<Agency> agencyList=agencyList();
+		when(agencyRepository.findByNameContaining("기관")).thenReturn(agencyList);
+		assertEquals(agencyList, agencyService.findByNameContaining("기관"));
+	}
+
+	@Test
+	public void findByNameContainingTestIsEmptyTest() {
+		List<Agency> agencyList=new ArrayList<Agency>();
+		when(agencyRepository.findByNameContaining("가관")).thenReturn(agencyList);
+		assertEquals(agencyList, agencyService.findByNameContaining("가관"));
+	}
+
+	public AgencyForm agencyToForm(Agency agency) {
+		AgencyForm agencyForm=new AgencyForm();
+		agencyForm.setAgencyId(agency.getId());
+		agencyForm.setName(agency.getName());
+		agencyForm.setOfficeId(agency.getOffice().getId());
+		return agencyForm;
+	}
+
+
+	public Agency formToAgency(AgencyForm agencyForm, Office office) {
+		Agency agency=new Agency();
+		agency.setId(agencyForm.getAgencyId());
+		agency.setName(agencyForm.getName());
+		agency.setOffice(office);
+		return agency;
+	}
+
+	@Test
 	public void insertSuccessTest() {
 		Agency agency=findOneAgency();
-		when(agencyRepository.existsById(agency.getId())).thenReturn(false);
-		when(agencyRepository.insert(agency)).thenReturn(agency);
-		assertTrue(agencyService.insert(agency));
+		AgencyForm agencyForm=agencyToForm(agency);
+		when(officeRepository.findById("1")).thenReturn(Optional.of(officeList().get(0)));
+		Agency insertAfterAgency=formToAgency(agencyForm, officeList().get(0));
+		when(agencyRepository.insert(insertAfterAgency)).thenReturn(insertAfterAgency);
+		assertTrue(agencyService.insert(agencyForm));
 	}
 
 	@Test
 	public void insertFailureTest() {
 		Agency agency=findOneAgency();
-		when(agencyRepository.existsById(agency.getId())).thenReturn(true);
-		assertFalse(agencyService.insert(agency));
+		AgencyForm agencyForm=agencyToForm(agency);
+		when(officeRepository.findById("1")).thenReturn(Optional.of(new Office()));
+		assertFalse(agencyService.insert(agencyForm));
 	}
 
 	@Test
 	public void updateSuccessTest() {
 		Agency agency=findOneAgency();
+		AgencyForm agencyForm=agencyToForm(agency);
+		Office office=new Office();
+		office.setId(String.format("%d", 1));
+		office.setName(String.format("시청%02d", 1));
+		office.setAddress(String.format("주소%02d", 1));
+		office.setHomepage(String.format("홈페이지%02d", 1));
+		office.setZipCode(String.format("우편번호%02d", 1));
+		when(officeRepository.findById(office.getId())).thenReturn(Optional.of(office));
 		when(agencyRepository.existsById(agency.getId())).thenReturn(true);
-		agency.setName("기관TEMP");
-		agency.setOffice(officeList().get(random.nextInt(OFFICE_QTY)));
-		when(agencyRepository.save(agency)).thenReturn(agency);
-		assertTrue(agencyService.update(agency));
+		agencyForm.setName("기관TEMP");
+		agencyForm.setOfficeId(office.getId());
+		Agency saveAfterAgency=formToAgency(agencyForm, office);
+		when(agencyRepository.save(saveAfterAgency)).thenReturn(saveAfterAgency);
+		assertTrue(agencyService.update(agencyForm));
 	}
 
 	@Test
 	public void updateFailureTest() {
 		Agency agency=findOneAgency();
+		AgencyForm agencyForm=agencyToForm(agency);
 		when(agencyRepository.existsById(agency.getId())).thenReturn(false);
-		assertFalse(agencyService.update(agency));
+		when(officeRepository.findById("1")).thenReturn(Optional.of(new Office()));
+		assertFalse(agencyService.update(agencyForm));
 	}
 
 	@Test
@@ -191,5 +239,19 @@ public class AgencyServiceTest {
 		Agency agency=findOneAgency();
 		when(agencyRepository.existsById(agency.getId())).thenReturn(false);
 		assertFalse(agencyService.delete(agency.getId()));
+	}
+
+	@Test
+	public void deleteByNameContainingSuccessTest() {
+		List<Agency> tmpResult=agencyList();
+		when(agencyRepository.findByNameContaining("기관")).thenReturn(tmpResult);
+		doNothing().when(agencyRepository).deleteByNameContaining("기관");
+		assertTrue(agencyService.deleteByNameContaining("기관"));
+	}
+
+	@Test
+	public void deleteByNameContainingFailureTest() {
+		when(agencyRepository.findByNameContaining("기관")).thenReturn(new ArrayList<Agency>());
+		assertFalse(agencyService.deleteByNameContaining("기관"));
 	}
 }

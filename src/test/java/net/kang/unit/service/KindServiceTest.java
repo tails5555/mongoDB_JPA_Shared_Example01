@@ -113,7 +113,7 @@ public class KindServiceTest {
 		List<Park> parkFindAll=parkList(kind);
 		when(kindRepository.findById(kind.getId())).thenReturn(Optional.of(kind));
 		when(parkRepository.findByKind(kind)).thenReturn(parkFindAll);
-		assertEquals(parkFindAll, kindService.findOneWithParkFindAll(kind.getId()));
+		assertEquals(parkFindAll, kindService.findOneAndParkFindAll(kind.getId()));
 	}
 
 	@Test
@@ -121,7 +121,21 @@ public class KindServiceTest {
 		Kind kind=findOneKind();
 		List<Park> parkFindAll=new ArrayList<Park>();
 		when(kindRepository.findById(kind.getId())).thenReturn(Optional.of(new Kind()));
-		assertEquals(parkFindAll, kindService.findOneWithParkFindAll(kind.getId()));
+		assertEquals(parkFindAll, kindService.findOneAndParkFindAll(kind.getId()));
+	}
+
+	@Test
+	public void findByNameContainingTestIsNotEmptyTest() {
+		List<Kind> kindList=kindList();
+		when(kindRepository.findByNameContaining("종류")).thenReturn(kindList);
+		assertEquals(kindList, kindService.findByNameContaining("종류"));
+	}
+
+	@Test
+	public void findByNameContainingTestIsEmptyTest() {
+		List<Kind> kindList=new ArrayList<Kind>();
+		when(kindRepository.findByNameContaining("종료")).thenReturn(kindList);
+		assertEquals(kindList, kindService.findByNameContaining("종료"));
 	}
 
 	@Test
@@ -168,5 +182,19 @@ public class KindServiceTest {
 		Kind kind=findOneKind();
 		when(kindRepository.existsById(kind.getId())).thenReturn(false);
 		assertFalse(kindService.delete(kind.getId()));
+	}
+
+	@Test
+	public void deleteByNameContainingSuccessTest() {
+		List<Kind> tmpResult=kindList();
+		when(kindRepository.findByNameContaining("종류")).thenReturn(tmpResult);
+		doNothing().when(kindRepository).deleteByNameContaining("종류");
+		assertTrue(kindService.deleteByNameContaining("종류"));
+	}
+
+	@Test
+	public void deleteByNameContainingFailureTest() {
+		when(kindRepository.findByNameContaining("종료")).thenReturn(new ArrayList<Kind>());
+		assertFalse(kindService.deleteByNameContaining("종료"));
 	}
 }

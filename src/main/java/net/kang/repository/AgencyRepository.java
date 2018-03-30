@@ -12,4 +12,5 @@ public interface AgencyRepository extends MongoRepository<Agency, String>{
 	void deleteByNameContaining(String name);
 	Optional<Agency> findByName(String name);
 	List<Agency> findByOffice(Office office);
+	List<Agency> findByNameContaining(String name);
 }

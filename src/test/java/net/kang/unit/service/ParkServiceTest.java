@@ -29,7 +29,9 @@ import net.kang.config.JUnitConfig;
 import net.kang.config.MongoConfig;
 import net.kang.domain.Agency;
 import net.kang.domain.Kind;
+import net.kang.domain.Office;
 import net.kang.domain.Park;
+import net.kang.model.ParkForm;
 import net.kang.model.Position;
 import net.kang.repository.AgencyRepository;
 import net.kang.repository.KindRepository;
@@ -73,6 +75,24 @@ public class ParkServiceTest {
 			tmpKindList.add(kind);
 		}
 		return tmpKindList;
+	}
+
+	public List<Agency> agencyList(){
+		List<Agency> tmpAgencyList=new ArrayList<Agency>();
+		Office office=new Office();
+		office.setId("1");
+		office.setName("시구청01");
+		office.setAddress("주소01");
+		office.setZipCode("우편번호01");
+		office.setHomepage("홈페이지01");
+		for(int k=0;k<AGENCY_QTY;k++) {
+			Agency agency=new Agency();
+			agency.setId(String.format("%d", k+1));
+			agency.setName(String.format("기관%02d", k));
+			agency.setOffice(office);
+			tmpAgencyList.add(agency);
+		}
+		return tmpAgencyList;
 	}
 
 	public List<Park> parkList(){
@@ -196,37 +216,118 @@ public class ParkServiceTest {
 	}
 
 	@Test
+	public void countByAgencyTest() {
+		List<Agency> tmpAgencyList=agencyList();
+		when(agencyRepository.findAll()).thenReturn(agencyList());
+		when(parkRepository.countByAgency(tmpAgencyList.get(0))).thenReturn((long) 3);
+		when(parkRepository.countByAgency(tmpAgencyList.get(1))).thenReturn((long) 7);
+		Map<Agency, Long> countByAgencyResult=parkService.countByAgency();
+		long tmpCount=0;
+		for(Agency a : tmpAgencyList) {
+			tmpCount+=countByAgencyResult.get(a);
+		}
+		assertEquals(tmpCount, PARK_QTY);
+	}
+
+	public Park formToPark(ParkForm parkForm, Agency agency, Kind kind) {
+		Park park=new Park();
+		park.setName(parkForm.getName());
+		park.setManageNo(parkForm.getManageNo());
+		park.setKind(kind);
+		park.setOldAddress(parkForm.getOldAddress());
+		park.setNewAddress(parkForm.getNewAddress());
+		park.setPosition(new Position(parkForm.getPosX(), parkForm.getPosY()));
+		park.setArea(parkForm.getArea());
+		park.setJymFacility(parkForm.getJymFacility());
+		park.setPlayFacility(parkForm.getPlayFacility());
+		park.setConvFacility(parkForm.getConvFacility());
+		park.setCultFacility(parkForm.getCultFacility());
+		park.setAnotFacility(parkForm.getAnotFacility());
+		park.setDesignateDate(parkForm.getDesignateDate());
+		park.setAgency(agency);
+		park.setCallPhone(parkForm.getCallPhone());
+		return park;
+	}
+
+	public ParkForm parkToForm(Park park) {
+		ParkForm parkForm=new ParkForm();
+		parkForm.setParkId(park.getId());;
+		parkForm.setName(park.getName());
+		parkForm.setManageNo(park.getManageNo());
+		parkForm.setKindId(park.getKind().getId());
+		parkForm.setOldAddress(park.getOldAddress());
+		parkForm.setNewAddress(park.getNewAddress());
+		parkForm.setPosX(park.getPosition().getPosX());
+		parkForm.setPosX(park.getPosition().getPosY());
+		parkForm.setArea(park.getArea());
+		parkForm.setJymFacility(park.getJymFacility());
+		parkForm.setPlayFacility(park.getPlayFacility());
+		parkForm.setConvFacility(park.getConvFacility());
+		parkForm.setCultFacility(park.getCultFacility());
+		parkForm.setAnotFacility(park.getAnotFacility());
+		parkForm.setDesignateDate(park.getDesignateDate());
+		parkForm.setAgencyId(park.getAgency().getId());
+		parkForm.setCallPhone(park.getCallPhone());
+		return parkForm;
+	}
+
+	@Test
 	public void insertSuccessTest() {
 		Park park=findOnePark();
-		when(parkRepository.existsById(park.getId())).thenReturn(false);
-		when(parkRepository.insert(park)).thenReturn(park);
-		assertTrue(parkService.insert(park));
+		ParkForm parkForm=parkToForm(park);
+		Kind kind=new Kind();
+		kind.setId("1");
+		kind.setName("종류01");
+		Agency agency=new Agency();
+		agency.setId("1");
+		agency.setName("기관01");
+		when(kindRepository.findById("1")).thenReturn(Optional.of(kind));
+		when(agencyRepository.findById("1")).thenReturn(Optional.of(agency));
+		Park insertAfterPark=formToPark(parkForm, agency, kind);
+		when(parkRepository.insert(insertAfterPark)).thenReturn(insertAfterPark);
+		assertTrue(parkService.insert(parkForm));
 	}
 
 	@Test
 	public void insertFailureTest() {
 		Park park=findOnePark();
-		when(parkRepository.existsById(park.getId())).thenReturn(true);
-		assertFalse(parkService.insert(park));
+		ParkForm parkForm=parkToForm(park);
+		when(kindRepository.findById("1")).thenReturn(Optional.of(new Kind()));
+		when(agencyRepository.findById("1")).thenReturn(Optional.of(new Agency()));
+		assertFalse(parkService.insert(parkForm));
 	}
 
 	@Test
 	public void updateSuccessTest() {
 		Park park=findOnePark();
-		when(parkRepository.existsById(park.getId())).thenReturn(true);
-		park.setName("공원TEMP");
-		park.setOldAddress("지번주소TEMP");
-		park.setNewAddress("도로명주소TEMP");
-		park.setArea(100.0+random.nextDouble()*100.0);
-		when(parkRepository.save(park)).thenReturn(park);
-		assertTrue(parkService.update(park));
+		ParkForm parkForm=parkToForm(park);
+		double randArea=100.0+random.nextDouble()*100.0;
+		Kind kind=new Kind();
+		kind.setId("1");
+		kind.setName("종류01");
+		Agency agency=new Agency();
+		agency.setId("1");
+		agency.setName("기관01");
+		when(kindRepository.findById("1")).thenReturn(Optional.of(kind));
+		when(agencyRepository.findById("1")).thenReturn(Optional.of(agency));
+		when(parkRepository.existsById(parkForm.getParkId())).thenReturn(true);
+		parkForm.setName("공원TEMP");
+		parkForm.setOldAddress("지번주소TEMP");
+		parkForm.setNewAddress("도로명주소TEMP");
+		parkForm.setArea(randArea);
+		Park saveAfterPark=formToPark(parkForm, agency, kind);
+		when(parkRepository.save(saveAfterPark)).thenReturn(saveAfterPark);
+		assertTrue(parkService.update(parkForm));
 	}
 
 	@Test
 	public void updateFailureTest() {
 		Park park=findOnePark();
-		when(parkRepository.existsById(park.getId())).thenReturn(false);
-		assertFalse(parkService.update(park));
+		ParkForm parkForm=parkToForm(park);
+		when(parkRepository.existsById(parkForm.getParkId())).thenReturn(false);
+		when(kindRepository.findById("1")).thenReturn(Optional.of(new Kind()));
+		when(agencyRepository.findById("1")).thenReturn(Optional.of(new Agency()));
+		assertFalse(parkService.update(parkForm));
 	}
 
 	@Test
@@ -256,5 +357,20 @@ public class ParkServiceTest {
 	public void deleteAllFailureTest() {
 		when(parkRepository.findAll()).thenReturn(new ArrayList<Park>());
 		assertFalse(parkService.deleteAll());
+	}
+
+	@Test
+	public void deleteByManageNoSuccessTest() {
+		Park tmpResult=findOnePark();
+		when(parkRepository.findByManageNo(tmpResult.getManageNo())).thenReturn(Optional.of(tmpResult));
+		doNothing().when(parkRepository).deleteByManageNo(tmpResult.getManageNo());
+		assertTrue(parkService.deleteByManageNo(tmpResult.getManageNo()));
+	}
+
+	@Test
+	public void deleteByManageNoFailureTest() {
+		Park tmpResult=findOnePark();
+		when(parkRepository.findByManageNo(tmpResult.getManageNo())).thenReturn(Optional.of(new Park()));
+		assertFalse(parkService.deleteByManageNo(tmpResult.getManageNo()));
 	}
 }

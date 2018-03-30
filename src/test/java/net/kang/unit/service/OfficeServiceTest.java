@@ -119,6 +119,20 @@ public class OfficeServiceTest {
 	}
 
 	@Test
+	public void findByNameContainingTestIsNotEmptyTest() {
+		List<Office> officeList=officeList();
+		when(officeRepository.findByNameContaining("시구청")).thenReturn(officeList);
+		assertEquals(officeList, officeService.findByNameContaining("시구청"));
+	}
+
+	@Test
+	public void findByNameContainingTestIsEmptyTest() {
+		List<Office> officeList=new ArrayList<Office>();
+		when(officeRepository.findByNameContaining("시고청")).thenReturn(officeList);
+		assertEquals(officeList, officeService.findByNameContaining("시고청"));
+	}
+
+	@Test
 	public void insertSuccessTest() {
 		Office office=findOneOffice();
 		when(officeRepository.existsById(office.getId())).thenReturn(false);
@@ -165,5 +179,19 @@ public class OfficeServiceTest {
 		Office office=findOneOffice();
 		when(officeRepository.existsById(office.getId())).thenReturn(false);
 		assertFalse(officeService.delete(office.getId()));
+	}
+
+	@Test
+	public void deleteByNameContainingSuccessTest() {
+		List<Office> tmpResult=officeList();
+		when(officeRepository.findByNameContaining("시구청")).thenReturn(tmpResult);
+		doNothing().when(officeRepository).deleteByNameContaining("시구청");
+		assertTrue(officeService.deleteByNameContaining("시구청"));
+	}
+
+	@Test
+	public void deleteByNameContainingFailureTest() {
+		when(officeRepository.findByNameContaining("시거청")).thenReturn(new ArrayList<Office>());
+		assertFalse(officeService.deleteByNameContaining("시거청"));
 	}
 }

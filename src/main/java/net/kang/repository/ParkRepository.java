@@ -12,6 +12,7 @@ import net.kang.domain.Park;
 public interface ParkRepository extends MongoRepository<Park, String>{
 	Optional<Park> findByManageNo(String manageNo);
 	long countByKind(Kind kind);
+	long countByAgency(Agency agency);
 	List<Park> findByKind(Kind kind);
 	List<Park> findByAgency(Agency agency);
 	List<Park> findByNameContaining(String name);
