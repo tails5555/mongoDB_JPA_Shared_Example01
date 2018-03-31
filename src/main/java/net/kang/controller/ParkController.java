@@ -74,7 +74,7 @@ public class ParkController {
 
 	@RequestMapping("findByCultFacilityContains/{cultFacilities}") // 문화시설들을 통한 검색. 위에서와 마찬가지.
 	public ResponseEntity<List<Park>> findByCultFacilityContains(@PathVariable("cultFacilities") String[] cultFacilities){
-		List<Park> parkList=parkService.findByConvFacilityContains(cultFacilities);
+		List<Park> parkList=parkService.findByCultFacilityContains(cultFacilities);
 		if(parkList.isEmpty()) {
 			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT);
 		}

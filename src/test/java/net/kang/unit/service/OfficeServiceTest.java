@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +36,6 @@ import net.kang.service.OfficeService;
 public class OfficeServiceTest {
 	static final int OFFICE_QTY=5;
 	static final int AGENCY_QTY=10;
-	static Random random=new Random();
 	MockMvc mockMvc;
 	@Mock OfficeRepository officeRepository;
 	@Mock AgencyRepository agencyRepository;

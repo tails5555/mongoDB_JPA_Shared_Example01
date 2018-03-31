@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +43,6 @@ public class AgencyServiceTest {
 	static final int AGENCY_QTY=5;
 	static final int OFFICE_QTY=2;
 	static final int PARK_QTY=10;
-	static Random random=new Random();
 	MockMvc mockMvc;
 	@Mock AgencyRepository agencyRepository;
 	@Mock ParkRepository parkRepository;
