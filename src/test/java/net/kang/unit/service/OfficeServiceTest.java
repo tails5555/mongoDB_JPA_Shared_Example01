@@ -53,7 +53,7 @@ public class OfficeServiceTest {
 		List<Office> officeList=new ArrayList<Office>();
 		for(int k=0;k<OFFICE_QTY;k++) {
 			Office office=new Office();
-			office.setId(String.format("%d", k));
+			office.setId(String.format("%d", k+1));
 			office.setName(String.format("시구청%02d", k));
 			office.setAddress(String.format("주소%02d", k));
 			office.setHomepage(String.format("홈페이지%02d", k));

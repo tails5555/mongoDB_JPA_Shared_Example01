@@ -1,5 +1,6 @@
 package net.kang.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,38 +72,62 @@ public class KindController {
 	}
 
 	@RequestMapping(value="insert", method=RequestMethod.POST) // 종류 Document를 새로 추가
-	public ResponseEntity<String> insert(@RequestBody Kind kind){
+	public ResponseEntity<String> insert(@RequestBody Kind kind) throws UnsupportedEncodingException{
+		String result;
+		byte[] eucKrToUtf8;
 		if(kindService.insert(kind)) {
-			return new ResponseEntity<String>("Kind Inserting is Success.", HttpStatus.CREATED);
+			result="Kind Inserting is Success.";
+			eucKrToUtf8=result.getBytes("UTF-8");
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.CREATED);
 		}else {
-			return new ResponseEntity<String>("Kind Inserting is Failure. It is Existed.", HttpStatus.CONFLICT);
+			result="Kind Inserting is Failure. It is Existed.";
+			eucKrToUtf8=result.getBytes("UTF-8");
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.CONFLICT);
 		}
 	}
 
 	@RequestMapping(value="update", method=RequestMethod.PUT) // 종류 Document를 수정
-	public ResponseEntity<String> update(@RequestBody Kind kind){
+	public ResponseEntity<String> update(@RequestBody Kind kind) throws UnsupportedEncodingException{
+		String result;
+		byte[] eucKrToUtf8;
 		if(kindService.update(kind)) {
-			return new ResponseEntity<String>("Kind Updating is Success.", HttpStatus.OK);
+			result="Kind Updating is Success.";
+			eucKrToUtf8=result.getBytes("UTF-8");
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Kind Updating is Failure. It Is Not Existed.", HttpStatus.NOT_MODIFIED);
+			result="Kind Updating is Failure. It Is Not Existed.";
+			eucKrToUtf8=result.getBytes("UTF-8");
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.NOT_MODIFIED);
 		}
 	}
 
 	@RequestMapping(value="delete/{id}", method=RequestMethod.DELETE) // 종류 Document를 삭제
-	public ResponseEntity<String> delete(@PathVariable("id") String id){
+	public ResponseEntity<String> delete(@PathVariable("id") String id) throws UnsupportedEncodingException{
+		String result;
+		byte[] eucKrToUtf8;
 		if(kindService.delete(id)) {
-			return new ResponseEntity<String>("Kind Deleting is Success.", HttpStatus.OK);
+			result="Kind Deleting is Success.";
+			eucKrToUtf8=result.getBytes("UTF-8");
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Kind Updating is Failure. It is Not Existed.", HttpStatus.NOT_FOUND);
+			result="Kind Updating is Failure. It is Not Existed.";
+			eucKrToUtf8=result.getBytes("UTF-8");
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@RequestMapping(value="deleteByNameContaining/{name}", method=RequestMethod.DELETE) // Kind의 name에 포함된 Document 삭제
-	public ResponseEntity<String> deleteByNameContaining(@PathVariable("name") String name){
+	public ResponseEntity<String> deleteByNameContaining(@PathVariable("name") String name) throws UnsupportedEncodingException{
+		String result;
+		byte[] eucKrToUtf8;
 		if(kindService.deleteByNameContaining(name)) {
-			return new ResponseEntity<String>(String.format("Name Containin' %s Deleting is Success.", name), HttpStatus.OK);
+			result=String.format("Name Containin' %s Deleting is Success.", name);
+			eucKrToUtf8=result.getBytes("UTF-8");
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>(String.format("Name Containin' %s Deleting is Failure.", name), HttpStatus.NOT_FOUND);
+			result=String.format("Name Containin' %s Deleting is Failure.", name);
+			eucKrToUtf8=result.getBytes("UTF-8");
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.NOT_FOUND);
 		}
 	}
 }

@@ -27,7 +27,7 @@ public class OfficeController {
 	public ResponseEntity<List<Office>> findAll(){
 		List<Office> officeList=officeService.findAll();
 		if(officeList.isEmpty()) {
-			return new ResponseEntity<List<Office>>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Office>>(officeList, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<List<Office>>(officeList, HttpStatus.OK);
 	}
@@ -63,7 +63,7 @@ public class OfficeController {
 	@RequestMapping(value="insert", method=RequestMethod.POST) // 성남에 있는 시-구청, 동주민센터 Document 추가
 	public ResponseEntity<String> insert(@RequestBody Office office){
 		if(officeService.insert(office)) {
-			return new ResponseEntity<String>("Office Inserting is Success.", HttpStatus.OK);
+			return new ResponseEntity<String>("Office Inserting is Success.", HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<String>("Office Inserting is Failure. It is Existed.", HttpStatus.CONFLICT);
 		}
