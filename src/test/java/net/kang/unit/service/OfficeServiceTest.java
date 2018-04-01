@@ -35,19 +35,19 @@ import net.kang.service.OfficeService;
 @WebAppConfiguration
 public class OfficeServiceTest {
 	static final int OFFICE_QTY=5;
-	static final int AGENCY_QTY=10;
+	static final int AGENCY_QTY=10; // 시구청 데이터의 수를 5개, 기관 데이터의 수를 10개로 설정
 	MockMvc mockMvc;
 	@Mock OfficeRepository officeRepository;
-	@Mock AgencyRepository agencyRepository;
-	@InjectMocks OfficeService officeService;
+	@Mock AgencyRepository agencyRepository; // repository는 Mock 객체.
+	@InjectMocks OfficeService officeService; // service는 일반 객체
 
 	@Before
-	public void initialize() {
+	public void initialize() { // Mock 객체 이용을 할 수 있도록 설정함
 		MockitoAnnotations.initMocks(this);
 		mockMvc=MockMvcBuilders.standaloneSetup(officeService).build();
 	}
 
-	public List<Office> officeList(){
+	public List<Office> officeList(){ // 시구청 목록에 대한 Mock 데이터 생성
 		List<Office> officeList=new ArrayList<Office>();
 		for(int k=0;k<OFFICE_QTY;k++) {
 			Office office=new Office();
@@ -62,14 +62,14 @@ public class OfficeServiceTest {
 	}
 
 	@Test
-	public void findAllTest() {
+	public void findAllTest() { // findAll 테스팅
 		List<Office> tmpResult=officeList();
 		when(officeRepository.findAll()).thenReturn(tmpResult);
 		List<Office> findAllResult=officeService.findAll();
 		assertEquals(tmpResult, findAllResult);
 	}
 
-	public Office findOneOffice() {
+	public Office findOneOffice() { // 시구청 객체 반환
 		Office office=new Office();
 		office.setId("1");
 		office.setName("시구청01");
@@ -80,14 +80,14 @@ public class OfficeServiceTest {
 	}
 
 	@Test
-	public void findOneTest() {
+	public void findOneTest() { // _id로 조회하는 테스팅
 		Office tmpResult=findOneOffice();
 		when(officeRepository.findById("1")).thenReturn(Optional.of(tmpResult));
 		Optional<Office> findOneResult=officeService.findOne("1");
 		assertEquals(tmpResult, findOneResult.get());
 	}
 
-	public List<Agency> agencyList(Office tmpOffice){
+	public List<Agency> agencyList(Office tmpOffice){ // 기관 목록 Mock 데이터 생성
 		List<Agency> agencyList=new ArrayList<Agency>();
 		for(int k=0;k<AGENCY_QTY;k++) {
 			Agency agency=new Agency();
@@ -100,7 +100,7 @@ public class OfficeServiceTest {
 	}
 
 	@Test
-	public void findOneAndAgencyFindAllIsNotEmptyTest() {
+	public void findOneAndAgencyFindAllIsNotEmptyTest() { // 시구청 별 기관 목록 가져오기 성공 테스팅
 		Office office=findOneOffice();
 		List<Agency> agencyFindAll=agencyList(office);
 		when(officeRepository.findById(office.getId())).thenReturn(Optional.of(office));
@@ -109,7 +109,7 @@ public class OfficeServiceTest {
 	}
 
 	@Test
-	public void findOneAndAgencyFindAllIsEmptyTest() {
+	public void findOneAndAgencyFindAllIsEmptyTest() { // 시구청 별 기관 목록 가져오기 실패 테스팅
 		Office office=findOneOffice();
 		when(officeRepository.findById(office.getId())).thenReturn(Optional.of(new Office()));
 		List<Agency> agencyFindAll=new ArrayList<Agency>();
@@ -117,21 +117,21 @@ public class OfficeServiceTest {
 	}
 
 	@Test
-	public void findByNameContainingTestIsNotEmptyTest() {
+	public void findByNameContainingTestIsNotEmptyTest() { // 이름 포함 조회 성공 테스팅
 		List<Office> officeList=officeList();
 		when(officeRepository.findByNameContaining("시구청")).thenReturn(officeList);
 		assertEquals(officeList, officeService.findByNameContaining("시구청"));
 	}
 
 	@Test
-	public void findByNameContainingTestIsEmptyTest() {
+	public void findByNameContainingTestIsEmptyTest() { // 이름 포함 조회 실패 테스팅
 		List<Office> officeList=new ArrayList<Office>();
 		when(officeRepository.findByNameContaining("시고청")).thenReturn(officeList);
 		assertEquals(officeList, officeService.findByNameContaining("시고청"));
 	}
 
 	@Test
-	public void insertSuccessTest() {
+	public void insertSuccessTest() { // 삽입 성공 테스팅
 		Office office=findOneOffice();
 		when(officeRepository.existsById(office.getId())).thenReturn(false);
 		when(officeRepository.insert(office)).thenReturn(office);
@@ -139,14 +139,14 @@ public class OfficeServiceTest {
 	}
 
 	@Test
-	public void insertFailureTest() {
+	public void insertFailureTest() { // 삽입 실패 테스팅
 		Office office=findOneOffice();
 		when(officeRepository.existsById(office.getId())).thenReturn(true);
 		assertFalse(officeService.insert(office));
 	}
 
 	@Test
-	public void updateSuccessTest() {
+	public void updateSuccessTest() { // 갱신 성공 테스팅
 		Office office=findOneOffice();
 		when(officeRepository.existsById(office.getId())).thenReturn(true);
 		office.setName("시구청TEMP");
@@ -158,14 +158,14 @@ public class OfficeServiceTest {
 	}
 
 	@Test
-	public void updateFailureTest() {
+	public void updateFailureTest() { // 갱신 실패 테스팅
 		Office office=findOneOffice();
 		when(officeRepository.existsById(office.getId())).thenReturn(false);
 		assertFalse(officeService.update(office));
 	}
 
 	@Test
-	public void deleteSuccessTest() {
+	public void deleteSuccessTest() { // 삭제 성공 테스팅
 		Office office=findOneOffice();
 		when(officeRepository.existsById(office.getId())).thenReturn(true);
 		doNothing().when(officeRepository).deleteById(office.getId());
@@ -173,14 +173,14 @@ public class OfficeServiceTest {
 	}
 
 	@Test
-	public void deleteFailureTest() {
+	public void deleteFailureTest() { // 삭제 실패 테스팅
 		Office office=findOneOffice();
 		when(officeRepository.existsById(office.getId())).thenReturn(false);
 		assertFalse(officeService.delete(office.getId()));
 	}
 
 	@Test
-	public void deleteByNameContainingSuccessTest() {
+	public void deleteByNameContainingSuccessTest() { // 이름 포함 삭제 테스팅
 		List<Office> tmpResult=officeList();
 		when(officeRepository.findByNameContaining("시구청")).thenReturn(tmpResult);
 		doNothing().when(officeRepository).deleteByNameContaining("시구청");
@@ -188,7 +188,7 @@ public class OfficeServiceTest {
 	}
 
 	@Test
-	public void deleteByNameContainingFailureTest() {
+	public void deleteByNameContainingFailureTest() { // 이름 포함 삭제 실패 테스팅
 		when(officeRepository.findByNameContaining("시거청")).thenReturn(new ArrayList<Office>());
 		assertFalse(officeService.deleteByNameContaining("시거청"));
 	}

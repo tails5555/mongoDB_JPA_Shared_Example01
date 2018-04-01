@@ -44,15 +44,15 @@ public class ParkServiceTest {
 	static final int PARK_QTY=10;
 	static final int AGENCY_QTY=2;
 	static final int KIND_QTY=2;
-	static final int FACILITY_QTY=2;
+	static final int FACILITY_QTY=2; // 공원의 수는 10개, 기관은 2개, 종류는 2개, 시설은 2개로 설정한다.
 	static Random random=new Random();
 	MockMvc mockMvc;
 	@Mock ParkRepository parkRepository;
 	@Mock KindRepository kindRepository;
-	@Mock AgencyRepository agencyRepository;
-	@InjectMocks ParkService parkService;
+	@Mock AgencyRepository agencyRepository; // repository는 Mock 객체.
+	@InjectMocks ParkService parkService; // service는 일반 객체
 
-	public List<String> facilityList(String facility){
+	public List<String> facilityList(String facility){ // 시설 목록 Mock 객체 반환
 		List<String> facilityList=new ArrayList<String>();
 		for(int k=0;k<FACILITY_QTY;k++) {
 			facilityList.add(String.format("%s%02d", facility, k));
@@ -61,12 +61,12 @@ public class ParkServiceTest {
 	}
 
 	@Before
-	public void initialize() {
+	public void initialize() { // Mock 객체 이용을 할 수 있도록 설정함
 		MockitoAnnotations.initMocks(this);
 		mockMvc=MockMvcBuilders.standaloneSetup(parkService).build();
 	}
 
-	public List<Kind> kindList(){
+	public List<Kind> kindList(){ // 종류 Mock 데이터 반환
 		List<Kind> tmpKindList=new ArrayList<Kind>();
 		for(int k=0;k<KIND_QTY;k++) {
 			Kind kind=new Kind();
@@ -77,7 +77,7 @@ public class ParkServiceTest {
 		return tmpKindList;
 	}
 
-	public List<Agency> agencyList(){
+	public List<Agency> agencyList(){ // 기관 Mock 데이터 반환
 		List<Agency> tmpAgencyList=new ArrayList<Agency>();
 		Office office=new Office();
 		office.setId("1");
@@ -95,7 +95,7 @@ public class ParkServiceTest {
 		return tmpAgencyList;
 	}
 
-	public List<Park> parkList(){
+	public List<Park> parkList(){ // 공원 Mock 데이터 반환
 		List<Park> tmpParkList=new ArrayList<Park>();
 		List<Kind> tmpKindList=kindList();
 		Agency agency=new Agency();
@@ -122,14 +122,14 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void findAllTest() {
+	public void findAllTest() { // findAll 테스팅
 		List<Park> tmpResult=parkList();
 		when(parkRepository.findAll()).thenReturn(tmpResult);
 		List<Park> findAllResult=parkService.findAll();
 		assertEquals(tmpResult, findAllResult);
 	}
 
-	public Park findOnePark() {
+	public Park findOnePark() { // 공원 Mock 객체 생성
 		Park park=new Park();
 		Kind kind=new Kind();
 		kind.setId("1");
@@ -154,7 +154,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void findOneTest() {
+	public void findOneTest() { // _id로 조회하는 테스팅
 		Park tmpResult=findOnePark();
 		when(parkRepository.findById("1")).thenReturn(Optional.of(tmpResult));
 		Optional<Park> findOneResult=parkService.findOne("1");
@@ -162,7 +162,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void findByManageNoTest() {
+	public void findByManageNoTest() { // 관리번호로 조회하는 테스팅
 		Park tmpResult=findOnePark();
 		when(parkRepository.findByManageNo("00000-00001")).thenReturn(Optional.of(tmpResult));
 		Optional<Park> findByManageNoResult=parkService.findByManageNo("00000-00001");
@@ -170,7 +170,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void findByConvFacilityContainsTest() {
+	public void findByConvFacilityContainsTest() { // 편의시설로 조회하는 테스팅
 		List<Park> tmpResult=parkList();
 		when(parkRepository.findByConvFacilityContains(new String[] {"편의시설00", "편의시설01"})).thenReturn(tmpResult);
 		List<Park> findByConvFacilityContainsResult=parkService.findByConvFacilityContains(new String[] {"편의시설00", "편의시설01"});
@@ -178,7 +178,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void findByCultFacilityContainsTest() {
+	public void findByCultFacilityContainsTest() { // 문화시설로 조회하는 테스팅
 		List<Park> tmpResult=parkList();
 		when(parkRepository.findByCultFacilityContains(new String[] {"문화시설00", "문화시설01"})).thenReturn(tmpResult);
 		List<Park> findByCultFacilityContainsResult=parkService.findByCultFacilityContains(new String[] {"문화시설00", "문화시설01"});
@@ -186,7 +186,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void findByNameContainingTest() {
+	public void findByNameContainingTest() { // 이름 포함 조회 테스팅
 		List<Park> tmpResult=parkList();
 		when(parkRepository.findByNameContaining("공원")).thenReturn(tmpResult);
 		List<Park> findByNameContainingResult=parkService.findByNameContaining("공원");
@@ -194,7 +194,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void findByAreaBetweenTest() {
+	public void findByAreaBetweenTest() { // 면적 범위 조회 테스팅
 		List<Park> tmpResult=parkList();
 		when(parkRepository.findByAreaBetween(100.0, 200.0)).thenReturn(tmpResult);
 		List<Park> findByAreaBetweenResult=parkService.findByAreaBetween(100.0, 200.0);
@@ -202,7 +202,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void countByKindTest() {
+	public void countByKindTest() { // 종류 카운팅 테스팅
 		List<Kind> tmpKindList=kindList();
 		when(kindRepository.findAll()).thenReturn(kindList());
 		when(parkRepository.countByKind(tmpKindList.get(0))).thenReturn((long) 5);
@@ -216,7 +216,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void countByAgencyTest() {
+	public void countByAgencyTest() { // 기관 카운팅 테스팅
 		List<Agency> tmpAgencyList=agencyList();
 		when(agencyRepository.findAll()).thenReturn(agencyList());
 		when(parkRepository.countByAgency(tmpAgencyList.get(0))).thenReturn((long) 3);
@@ -229,7 +229,7 @@ public class ParkServiceTest {
 		assertEquals(tmpCount, PARK_QTY);
 	}
 
-	public Park formToPark(ParkForm parkForm, Agency agency, Kind kind) {
+	public Park formToPark(ParkForm parkForm, Agency agency, Kind kind) { // 공원 Form에서 객체로
 		Park park=new Park();
 		park.setName(parkForm.getName());
 		park.setManageNo(parkForm.getManageNo());
@@ -249,7 +249,7 @@ public class ParkServiceTest {
 		return park;
 	}
 
-	public ParkForm parkToForm(Park park) {
+	public ParkForm parkToForm(Park park) { // 공원에서 공원 Form으로
 		ParkForm parkForm=new ParkForm();
 		parkForm.setParkId(park.getId());;
 		parkForm.setName(park.getName());
@@ -272,7 +272,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void insertSuccessTest() {
+	public void insertSuccessTest() { // 삽입 성공 테스팅
 		Park park=findOnePark();
 		ParkForm parkForm=parkToForm(park);
 		Kind kind=new Kind();
@@ -289,7 +289,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void insertFailureTest() {
+	public void insertFailureTest() { // 삽입 실패 테스팅
 		Park park=findOnePark();
 		ParkForm parkForm=parkToForm(park);
 		when(kindRepository.findById("1")).thenReturn(Optional.of(new Kind()));
@@ -298,7 +298,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void updateSuccessTest() {
+	public void updateSuccessTest() { // 갱신 성공 테스팅
 		Park park=findOnePark();
 		ParkForm parkForm=parkToForm(park);
 		double randArea=100.0+random.nextDouble()*100.0;
@@ -321,7 +321,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void updateFailureTest() {
+	public void updateFailureTest() { // 갱신 실패 테스팅
 		Park park=findOnePark();
 		ParkForm parkForm=parkToForm(park);
 		when(parkRepository.existsById(parkForm.getParkId())).thenReturn(false);
@@ -331,7 +331,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void deleteSuccessTest() {
+	public void deleteSuccessTest() { // 삭제 성공 테스팅
 		Park park=findOnePark();
 		when(parkRepository.existsById(park.getId())).thenReturn(true);
 		doNothing().when(parkRepository).deleteById(park.getId());
@@ -339,14 +339,14 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void deleteFailureTest() {
+	public void deleteFailureTest() { // 삭제 실패 테스팅
 		Park park=findOnePark();
 		when(parkRepository.existsById(park.getId())).thenReturn(false);
 		assertFalse(parkService.delete(park.getId()));
 	}
 
 	@Test
-	public void deleteAllSuccessTest() {
+	public void deleteAllSuccessTest() { // 모든 데이터 삭제 성공 테스팅
 		List<Park> findAllResult=parkList();
 		when(parkRepository.findAll()).thenReturn(findAllResult);
 		doNothing().when(parkRepository).deleteAll();
@@ -354,13 +354,13 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void deleteAllFailureTest() {
+	public void deleteAllFailureTest() { // 모든 데이터 삭제 실패 테스팅
 		when(parkRepository.findAll()).thenReturn(new ArrayList<Park>());
 		assertFalse(parkService.deleteAll());
 	}
 
 	@Test
-	public void deleteByManageNoSuccessTest() {
+	public void deleteByManageNoSuccessTest() { // 관리 번호로 삭제 성공 테스팅
 		Park tmpResult=findOnePark();
 		when(parkRepository.findByManageNo(tmpResult.getManageNo())).thenReturn(Optional.of(tmpResult));
 		doNothing().when(parkRepository).deleteByManageNo(tmpResult.getManageNo());
@@ -368,7 +368,7 @@ public class ParkServiceTest {
 	}
 
 	@Test
-	public void deleteByManageNoFailureTest() {
+	public void deleteByManageNoFailureTest() { // 관리 번호로 삭제 실패 테스팅
 		Park tmpResult=findOnePark();
 		when(parkRepository.findByManageNo(tmpResult.getManageNo())).thenReturn(Optional.of(new Park()));
 		assertFalse(parkService.deleteByManageNo(tmpResult.getManageNo()));

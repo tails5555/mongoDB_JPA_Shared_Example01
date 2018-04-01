@@ -38,19 +38,19 @@ import net.kang.service.KindService;
 @WebAppConfiguration
 public class KindServiceTest {
 	static final int KIND_QTY=5;
-	static final int PARK_QTY=10;
+	static final int PARK_QTY=10; // 각각 종류와 공원의 Mock 데이터 수 설정
 	MockMvc mockMvc;
 	@Mock KindRepository kindRepository;
-	@Mock ParkRepository parkRepository;
-	@InjectMocks KindService kindService;
+	@Mock ParkRepository parkRepository; // repository는 Mock 객체로
+	@InjectMocks KindService kindService; // service 객체는 그대로 이용
 
 	@Before
-	public void initialize() {
+	public void initialize() { // Mock 객체 이용을 할 수 있도록 설정함
 		MockitoAnnotations.initMocks(this);
 		mockMvc=MockMvcBuilders.standaloneSetup(kindService).build();
 	}
 
-	public List<Kind> kindList(){
+	public List<Kind> kindList(){ // 종류 Mock 데이터 반환
 		List<Kind> kindList=new ArrayList<Kind>();
 		for(int k=0;k<KIND_QTY;k++) {
 			Kind kind=new Kind();
@@ -62,14 +62,14 @@ public class KindServiceTest {
 	}
 
 	@Test
-	public void findAllTest() {
+	public void findAllTest() { // findAll 테스팅
 		List<Kind> tmpResult=kindList();
 		when(kindRepository.findAll()).thenReturn(tmpResult);
 		List<Kind> findAllResult=kindService.findAll();
 		assertEquals(tmpResult, findAllResult);
 	}
 
-	public Kind findOneKind() {
+	public Kind findOneKind() { // 종류 Mock 객체 반환
 		Kind kind=new Kind();
 		kind.setId("1");
 		kind.setName("종류01");
@@ -77,14 +77,14 @@ public class KindServiceTest {
 	}
 
 	@Test
-	public void findOneTest() {
+	public void findOneTest() { // findOne 테스팅
 		Kind tmpResult=findOneKind();
 		when(kindRepository.findById("1")).thenReturn(Optional.of(tmpResult));
 		Optional<Kind> findOneResult=kindService.findOne("1");
 		assertEquals(tmpResult, findOneResult.get());
 	}
 
-	public List<Park> parkList(Kind tmpKind){
+	public List<Park> parkList(Kind tmpKind){ // 공원 Mock 데이터 반환
 		Agency agency=new Agency();
 		agency.setId("1");
 		agency.setName("기관01");
@@ -108,7 +108,7 @@ public class KindServiceTest {
 	}
 
 	@Test
-	public void findOneAndParkFindAllIsNotEmptyTest() {
+	public void findOneAndParkFindAllIsNotEmptyTest() { // 공원 조회 성공 테스팅
 		Kind kind=findOneKind();
 		List<Park> parkFindAll=parkList(kind);
 		when(kindRepository.findById(kind.getId())).thenReturn(Optional.of(kind));
@@ -117,7 +117,7 @@ public class KindServiceTest {
 	}
 
 	@Test
-	public void findOneAndParkFindAllIsEmptyTest() {
+	public void findOneAndParkFindAllIsEmptyTest() { // 공원 조회 실패 테스팅
 		Kind kind=findOneKind();
 		List<Park> parkFindAll=new ArrayList<Park>();
 		when(kindRepository.findById(kind.getId())).thenReturn(Optional.of(new Kind()));
@@ -125,21 +125,21 @@ public class KindServiceTest {
 	}
 
 	@Test
-	public void findByNameContainingTestIsNotEmptyTest() {
+	public void findByNameContainingTestIsNotEmptyTest() { // 이름 포함 조회 성공 테스팅
 		List<Kind> kindList=kindList();
 		when(kindRepository.findByNameContaining("종류")).thenReturn(kindList);
 		assertEquals(kindList, kindService.findByNameContaining("종류"));
 	}
 
 	@Test
-	public void findByNameContainingTestIsEmptyTest() {
+	public void findByNameContainingTestIsEmptyTest() { // 이름 포함 조회 실패 테스팅
 		List<Kind> kindList=new ArrayList<Kind>();
 		when(kindRepository.findByNameContaining("종료")).thenReturn(kindList);
 		assertEquals(kindList, kindService.findByNameContaining("종료"));
 	}
 
 	@Test
-	public void insertSuccessTest() {
+	public void insertSuccessTest() { // 삽입 성공 테스팅
 		Kind kind=findOneKind();
 		when(kindRepository.existsById(kind.getId())).thenReturn(false);
 		when(kindRepository.insert(kind)).thenReturn(kind);
@@ -147,14 +147,14 @@ public class KindServiceTest {
 	}
 
 	@Test
-	public void insertFailureTest() {
+	public void insertFailureTest() { // 삽입 실패 테스팅
 		Kind kind=findOneKind();
 		when(kindRepository.existsById(kind.getId())).thenReturn(true);
 		assertFalse(kindService.insert(kind));
 	}
 
 	@Test
-	public void updateSuccessTest() {
+	public void updateSuccessTest() { // 갱신 성공 테스팅
 		Kind kind=findOneKind();
 		when(kindRepository.existsById(kind.getId())).thenReturn(true);
 		kind.setName("종류TEMP");
@@ -163,14 +163,14 @@ public class KindServiceTest {
 	}
 
 	@Test
-	public void updateFailureTest() {
+	public void updateFailureTest() { // 갱신 실패 테스팅
 		Kind kind=findOneKind();
 		when(kindRepository.existsById(kind.getId())).thenReturn(false);
 		assertFalse(kindService.update(kind));
 	}
 
 	@Test
-	public void deleteSuccessTest() {
+	public void deleteSuccessTest() { // 삭제 성공 테스팅
 		Kind kind=findOneKind();
 		when(kindRepository.existsById(kind.getId())).thenReturn(true);
 		doNothing().when(kindRepository).deleteById(kind.getId());
@@ -178,14 +178,14 @@ public class KindServiceTest {
 	}
 
 	@Test
-	public void deleteFailureTest() {
+	public void deleteFailureTest() { // 삭제 실패 테스팅
 		Kind kind=findOneKind();
 		when(kindRepository.existsById(kind.getId())).thenReturn(false);
 		assertFalse(kindService.delete(kind.getId()));
 	}
 
 	@Test
-	public void deleteByNameContainingSuccessTest() {
+	public void deleteByNameContainingSuccessTest() { // 이름 포함 삭제 성공 테스팅
 		List<Kind> tmpResult=kindList();
 		when(kindRepository.findByNameContaining("종류")).thenReturn(tmpResult);
 		doNothing().when(kindRepository).deleteByNameContaining("종류");
@@ -193,7 +193,7 @@ public class KindServiceTest {
 	}
 
 	@Test
-	public void deleteByNameContainingFailureTest() {
+	public void deleteByNameContainingFailureTest() { // 이름 포함 삭제 실패 테스팅
 		when(kindRepository.findByNameContaining("종료")).thenReturn(new ArrayList<Kind>());
 		assertFalse(kindService.deleteByNameContaining("종료"));
 	}

@@ -28,7 +28,7 @@ import net.kang.repository.OfficeRepository;
 @EntityScan(basePackageClasses = {net.kang.domain.Office.class})
 public class OfficeRepositoryTest {
 	@Autowired OfficeRepository officeRepository;
-	static final int QTY=5;
+	static final int QTY=5; // 시구청의 수는 임시로 5개로 한다.
 	static List<Office> tmpList;
 	static Random random=new Random();
 
@@ -42,17 +42,17 @@ public class OfficeRepositoryTest {
 			office.setHomepage(String.format("홈페이지%02d", k));
 			office.setZipCode(String.format("우편번호%02d", k));
 			officeRepository.insert(office);
-		}
+		} // Mock Data에 대해서 각각 추가시킨다.
 	}
 
 	@Test
-	public void findAllTest() {
+	public void findAllTest() { // findAll 테스팅. findAll를 한 결과 데이터의 목록의 수로 비교를 한다.
 		List<Office> findAll=officeRepository.findAll();
 		assertEquals(findAll.size(), tmpList.size()+QTY);
 	}
 
 	@Test
-	public void findOneTest() {
+	public void findOneTest() { // findOne 테스팅. Mock Data에 대해 임의로 하나 꺼내서 테스팅을 한다.
 		List<Office> findAll=officeRepository.findAll();
 		int getIdx=tmpList.size()+random.nextInt(QTY);
 		Office office=findAll.get(getIdx);
@@ -62,7 +62,7 @@ public class OfficeRepositoryTest {
 	}
 
 	@Test
-	public void insertTest() {
+	public void insertTest() { // insert 테스팅. 데이터를 추가하고 난 후에 그 데이터가 현존하는지에 대해 확인을 한다.
 		List<Office> beforeInsertList=officeRepository.findAll();
 		Office office=new Office();
 		office.setName("시구청05");
@@ -76,7 +76,7 @@ public class OfficeRepositoryTest {
 	}
 
 	@Test
-	public void updateTest() {
+	public void updateTest() { // update 테스팅. 데이터를 갱신하고 난 후에 그 현존하는 데이터가 올바르게 수정됐는지 확인을 한다.
 		List<Office> beforeUpdateList=officeRepository.findAll();
 		int getIdx=tmpList.size()+random.nextInt(QTY);
 		Office office=beforeUpdateList.remove(getIdx);
@@ -90,7 +90,7 @@ public class OfficeRepositoryTest {
 	}
 
 	@Test
-	public void deleteTest() {
+	public void deleteTest() { // delete 테스팅. 데이터를 삭제하고 난 후에 데이터가 없어졌는지 확인을 한다.
 		List<Office> beforeDeleteList=officeRepository.findAll();
 		int getIdx=tmpList.size()+random.nextInt(QTY);
 		Office office=beforeDeleteList.remove(getIdx);
@@ -100,7 +100,7 @@ public class OfficeRepositoryTest {
 	}
 
 	@Test
-	public void deleteByNameContainingTest() {
+	public void deleteByNameContainingTest() { // deleteByNameContaining 테스팅. Mock 데이터들에 대해서 모두 삭제를 하고 현존하는 데이터의 수로 확인을 한다.
 		List<Office> beforeDeleteList=officeRepository.findAll();
 		officeRepository.deleteByNameContaining("시구청");
 		List<Office> afterDeleteList=officeRepository.findAll();
@@ -109,7 +109,7 @@ public class OfficeRepositoryTest {
 	}
 
 	@After
-	public void afterTest() {
+	public void afterTest() { // 테스팅이 완료되는 시점에서 Mock 데이터 목록들을 삭제한다.
 		officeRepository.deleteByNameContaining("시구청");
 	}
 }

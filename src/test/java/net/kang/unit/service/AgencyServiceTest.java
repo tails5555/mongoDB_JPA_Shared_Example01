@@ -39,23 +39,23 @@ import net.kang.service.AgencyService;
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(classes = {JUnitConfig.class, MongoConfig.class})
 @WebAppConfiguration
-public class AgencyServiceTest {
+public class AgencyServiceTest { // 기관 서비스 테스팅 클래스 생성.
 	static final int AGENCY_QTY=5;
 	static final int OFFICE_QTY=2;
-	static final int PARK_QTY=10;
+	static final int PARK_QTY=10; // 각각 기관, 시구청, 공원 수를 생성.
 	MockMvc mockMvc;
 	@Mock AgencyRepository agencyRepository;
 	@Mock ParkRepository parkRepository;
-	@Mock OfficeRepository officeRepository;
-	@InjectMocks AgencyService agencyService;
+	@Mock OfficeRepository officeRepository; // repository는 Mock 객체.
+	@InjectMocks AgencyService agencyService; // service는 일반 객체
 
 	@Before
-	public void initialize() {
+	public void initialize() { // Mock 객체 이용을 할 수 있도록 설정함
 		MockitoAnnotations.initMocks(this);
 		mockMvc=MockMvcBuilders.standaloneSetup(agencyService).build();
 	}
 
-	public List<Office> officeList(){
+	public List<Office> officeList(){ // 시구청 목록에 대한 Mock 데이터 생성
 		List<Office> officeList=new ArrayList<Office>();
 		for(int k=0;k<OFFICE_QTY;k++) {
 			Office office=new Office();
@@ -69,7 +69,7 @@ public class AgencyServiceTest {
 		return officeList;
 	}
 
-	public List<Agency> agencyList(){
+	public List<Agency> agencyList(){ // 기관 목록에 대한 Mock 데이터 생성
 		List<Agency> agencyList=new ArrayList<Agency>();
 		for(int k=0;k<AGENCY_QTY;k++) {
 			Agency agency=new Agency();
@@ -83,14 +83,14 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void findAllTest() {
+	public void findAllTest() { // findAll 테스팅
 		List<Agency> tmpResult=agencyList();
 		when(agencyRepository.findAll()).thenReturn(tmpResult);
 		List<Agency> findAllResult=agencyService.findAll();
 		assertEquals(findAllResult, tmpResult);
 	}
 
-	public Agency findOneAgency() {
+	public Agency findOneAgency() { // 기관으로 조회하는 테스팅
 		Agency agency=new Agency();
 		agency.setId("1");
 		agency.setName("기관01");
@@ -99,14 +99,14 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void findOneTest() {
+	public void findOneTest() { // _id로 조회하는 테스팅
 		Agency tmpResult=findOneAgency();
 		when(agencyRepository.findById("1")).thenReturn(Optional.of(tmpResult));
 		Optional<Agency> findOneResult=agencyService.findOne(String.format("%d", 1));
 		assertEquals(tmpResult, findOneResult.get());
 	}
 
-	public List<Park> parkList(Agency tmpAgency){
+	public List<Park> parkList(Agency tmpAgency){ // 공원 Mock 데이터 생성
 		Kind kind=new Kind();
 		kind.setId("1");
 		kind.setName("종류1");
@@ -131,7 +131,7 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void findOneAndParkFindAllIsNotEmptyTest() {
+	public void findOneAndParkFindAllIsNotEmptyTest() { // 공원 조회 성공 테스팅
 		Agency agency=findOneAgency();
 		List<Park> parkFindAll=parkList(agency);
 		when(agencyRepository.findById(agency.getId())).thenReturn(Optional.of(agency));
@@ -140,7 +140,7 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void findOneAndParkFindAllIsEmptyTest() {
+	public void findOneAndParkFindAllIsEmptyTest() { // 공원 조회 실패 테스팅
 		Agency agency=findOneAgency();
 		List<Park> parkFindAll=new ArrayList<Park>();
 		when(agencyRepository.findById(agency.getId())).thenReturn(Optional.of(new Agency()));
@@ -148,20 +148,20 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void findByNameContainingTestIsNotEmptyTest() {
+	public void findByNameContainingTestIsNotEmptyTest() {  // 이름 포함 조회 성공 테스팅
 		List<Agency> agencyList=agencyList();
 		when(agencyRepository.findByNameContaining("기관")).thenReturn(agencyList);
 		assertEquals(agencyList, agencyService.findByNameContaining("기관"));
 	}
 
 	@Test
-	public void findByNameContainingTestIsEmptyTest() {
+	public void findByNameContainingTestIsEmptyTest() { // 이름 포함 조회 실패 테스팅
 		List<Agency> agencyList=new ArrayList<Agency>();
 		when(agencyRepository.findByNameContaining("가관")).thenReturn(agencyList);
 		assertEquals(agencyList, agencyService.findByNameContaining("가관"));
 	}
 
-	public AgencyForm agencyToForm(Agency agency) {
+	public AgencyForm agencyToForm(Agency agency) { // 기관 객체를 기관 Form. 이는 추가, 수정할 때 필요.
 		AgencyForm agencyForm=new AgencyForm();
 		agencyForm.setAgencyId(agency.getId());
 		agencyForm.setName(agency.getName());
@@ -169,8 +169,7 @@ public class AgencyServiceTest {
 		return agencyForm;
 	}
 
-
-	public Agency formToAgency(AgencyForm agencyForm, Office office) {
+	public Agency formToAgency(AgencyForm agencyForm, Office office) { // 기관 Form을 기관 객체로 반환
 		Agency agency=new Agency();
 		agency.setId(agencyForm.getAgencyId());
 		agency.setName(agencyForm.getName());
@@ -179,7 +178,7 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void insertSuccessTest() {
+	public void insertSuccessTest() { // 삽입 성공 테스팅
 		Agency agency=findOneAgency();
 		AgencyForm agencyForm=agencyToForm(agency);
 		when(officeRepository.findById("1")).thenReturn(Optional.of(officeList().get(0)));
@@ -189,7 +188,7 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void insertFailureTest() {
+	public void insertFailureTest() { // 삽입 실패 테스팅
 		Agency agency=findOneAgency();
 		AgencyForm agencyForm=agencyToForm(agency);
 		when(officeRepository.findById("1")).thenReturn(Optional.of(new Office()));
@@ -197,7 +196,7 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void updateSuccessTest() {
+	public void updateSuccessTest() { // 갱신 성공 테스팅
 		Agency agency=findOneAgency();
 		AgencyForm agencyForm=agencyToForm(agency);
 		Office office=new Office();
@@ -216,7 +215,7 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void updateFailureTest() {
+	public void updateFailureTest() { // 갱신 실패 테스팅
 		Agency agency=findOneAgency();
 		AgencyForm agencyForm=agencyToForm(agency);
 		when(agencyRepository.existsById(agency.getId())).thenReturn(false);
@@ -225,7 +224,7 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void deleteSuccessTest() {
+	public void deleteSuccessTest() { // 삭제 성공 테스팅
 		Agency agency=findOneAgency();
 		when(agencyRepository.existsById(agency.getId())).thenReturn(true);
 		doNothing().when(agencyRepository).deleteById(agency.getId());
@@ -233,14 +232,14 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void deleteFailureTest() {
+	public void deleteFailureTest() { // 삭제 실패 테스팅
 		Agency agency=findOneAgency();
 		when(agencyRepository.existsById(agency.getId())).thenReturn(false);
 		assertFalse(agencyService.delete(agency.getId()));
 	}
 
 	@Test
-	public void deleteByNameContainingSuccessTest() {
+	public void deleteByNameContainingSuccessTest() { // 이름 포함 삭제 테스팅
 		List<Agency> tmpResult=agencyList();
 		when(agencyRepository.findByNameContaining("기관")).thenReturn(tmpResult);
 		doNothing().when(agencyRepository).deleteByNameContaining("기관");
@@ -248,7 +247,7 @@ public class AgencyServiceTest {
 	}
 
 	@Test
-	public void deleteByNameContainingFailureTest() {
+	public void deleteByNameContainingFailureTest() { // 이름 포함 삭제 실패 테스팅
 		when(agencyRepository.findByNameContaining("기관")).thenReturn(new ArrayList<Agency>());
 		assertFalse(agencyService.deleteByNameContaining("기관"));
 	}
