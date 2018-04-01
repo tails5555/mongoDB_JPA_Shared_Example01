@@ -32,14 +32,14 @@ public class ParkController {
 	@RequestMapping(value="excelUpload", method=RequestMethod.POST) // 초기에 엑셀로 업로드를 해서 데이터의 변동이 있는지 확인을 하고 난 후에 없으면 추가, 있으면 수정을 하였음. 공공데이터 내부에서는 데이터 수정, 추가를 할 일이 없기 때문에 엑셀 업로드에 대해서만 반영을 하였음.
 	public ResponseEntity<String> excelUpload() throws IOException, ParseException {
 		parkService.excelUpload();
-		return new ResponseEntity<String>("Park Information Upload Complete", HttpStatus.CREATED);
+		return new ResponseEntity<String>("Park Information Upload Complete", HttpStatus.CREATED); // 엑셀 업로드가 완료된다면 Created 상태
 	}
 
 	@RequestMapping("findAll") // 모든 공원 목록들을 조회
 	public ResponseEntity<List<Park>> findAll(){
 		List<Park> parkList=parkService.findAll();
 		if(parkList.isEmpty()) {
-			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT); // 공원 목록들이 존재하지 않으면 No Content 상태
 		}
 		return new ResponseEntity<List<Park>>(parkList, HttpStatus.OK);
 	}
@@ -49,7 +49,7 @@ public class ParkController {
 		Optional<Park> park=parkService.findByManageNo(manageNo);
 		Park result=park.orElse(new Park());
 		if(result.equals(new Park())) {
-			return new ResponseEntity<Park>(result, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Park>(result, HttpStatus.NO_CONTENT); // 공원이 존재하지 않으면 No Content 상태
 		}
 		return new ResponseEntity<Park>(result, HttpStatus.OK);
 	}
@@ -58,7 +58,7 @@ public class ParkController {
 	public ResponseEntity<List<Park>> findByNameContaining(@PathVariable("name") String name){
 		List<Park> parkList=parkService.findByNameContaining(name);
 		if(parkList.isEmpty()) {
-			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT); // 공원 목록이 존재하지 않으면 No Content 상태
 		}
 		return new ResponseEntity<List<Park>>(parkList, HttpStatus.OK);
 	}
@@ -67,7 +67,7 @@ public class ParkController {
 	public ResponseEntity<List<Park>> findByConvFacilityContains(@PathVariable("convFacilities") String[] convFacilities) {
 		List<Park> parkList=parkService.findByConvFacilityContains(convFacilities);
 		if(parkList.isEmpty()) {
-			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT); // 공원 목록이 존재하지 않으면 No Content 상태
 		}
 		return new ResponseEntity<List<Park>>(parkList, HttpStatus.OK);
 	}
@@ -76,7 +76,7 @@ public class ParkController {
 	public ResponseEntity<List<Park>> findByCultFacilityContains(@PathVariable("cultFacilities") String[] cultFacilities){
 		List<Park> parkList=parkService.findByCultFacilityContains(cultFacilities);
 		if(parkList.isEmpty()) {
-			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT); // 공원 목록이 존재하지 않으면 No Content 상태
 		}
 		return new ResponseEntity<List<Park>>(parkList, HttpStatus.OK);
 	}
@@ -85,9 +85,9 @@ public class ParkController {
 	public ResponseEntity<?> findByAreaBetween(@PathVariable("area1") double area1, @PathVariable("area2") double area2){
 		List<Park> parkList=parkService.findByAreaBetween(area1, area2);
 		if(area1>area2) {
-			return new ResponseEntity<String>("Range Error!!!", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("Range Error!!!", HttpStatus.BAD_REQUEST); // 범위가 잘 못 되었다면 Bad Request 상태
 		}else if(parkList.isEmpty()) {
-			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT); // 공원 목록이 존재하지 않으면 No Content 상태
 		}
 		return new ResponseEntity<List<Park>>(parkList, HttpStatus.OK);
 	}
@@ -96,7 +96,7 @@ public class ParkController {
 	public ResponseEntity<Map<Kind, Long>> countByKind(){
 		Map<Kind, Long> kindAndCounter=parkService.countByKind();
 		if(kindAndCounter.isEmpty()) {
-			return new ResponseEntity<Map<Kind, Long>>(kindAndCounter, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Map<Kind, Long>>(kindAndCounter, HttpStatus.NO_CONTENT); // Kind가 등록되지 않았으면 No Content 상태
 		}
 		return new ResponseEntity<Map<Kind, Long>>(kindAndCounter, HttpStatus.OK);
 	}
@@ -105,53 +105,53 @@ public class ParkController {
 	public ResponseEntity<Map<Agency, Long>> countByAgency(){
 		Map<Agency, Long> agencyAndCounter=parkService.countByAgency();
 		if(agencyAndCounter.isEmpty()) {
-			return new ResponseEntity<Map<Agency, Long>>(agencyAndCounter, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Map<Agency, Long>>(agencyAndCounter, HttpStatus.NO_CONTENT); // Agency가 등록되지 않았다면 No Content 상태
 		}
 		return new ResponseEntity<Map<Agency, Long>>(agencyAndCounter, HttpStatus.OK);
 	}
 
-	@RequestMapping(value="insert", method=RequestMethod.POST) // 기관 Document 추가
+	@RequestMapping(value="insert", method=RequestMethod.POST) // 공원 Document 추가
 	public ResponseEntity<String> insert(@RequestBody ParkForm parkForm){
 		if(parkService.insert(parkForm)) {
-			return new ResponseEntity<String>("Park Inserting is Success.", HttpStatus.CREATED);
+			return new ResponseEntity<String>("Park Inserting is Success.", HttpStatus.CREATED); // 공원이 추가 완료되면 Created 상태
 		}else {
-			return new ResponseEntity<String>("Park Inserting is Failure. Kind or Agency's ID is Error.", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("Park Inserting is Failure. Kind or Agency's ID is Error.", HttpStatus.INTERNAL_SERVER_ERROR); // 공원이 추가 되지 않았다면 Internal Server Error 발생
 		}
 	}
 
-	@RequestMapping(value="update", method=RequestMethod.PUT) // 기관 Document를 수정
+	@RequestMapping(value="update", method=RequestMethod.PUT) // 공원 Document를 수정
 	public ResponseEntity<String> update(@RequestBody ParkForm parkForm){
 		if(parkService.update(parkForm)) {
 			return new ResponseEntity<String>("Park Updating is Success.", HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Park Updating is Failure. Kind or Agency's ID is Error.", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("Park Updating is Failure. Kind or Agency's ID is Error.", HttpStatus.INTERNAL_SERVER_ERROR); // 공원이 추가 되지 않았다면 Internal Server Error 발생
 		}
 	}
 
-	@RequestMapping(value="delete/{id}", method=RequestMethod.DELETE) // 기관 Document를 삭제
+	@RequestMapping(value="delete/{id}", method=RequestMethod.DELETE) // 공원 Document를 삭제
 	public ResponseEntity<String> delete(@PathVariable("id") String id){
 		if(parkService.delete(id)) {
 			return new ResponseEntity<String>("Park Deleting is Success.", HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Park Updating is Failure. It is Not Existed.", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Park Updating is Failure. It is Not Existed.", HttpStatus.NOT_FOUND); // 공원이 삭제되지 않으면 Not Found 상태
 		}
 	}
 
-	@RequestMapping(value="deleteAll", method=RequestMethod.DELETE) // 기관 Document를 삭제
+	@RequestMapping(value="deleteAll", method=RequestMethod.DELETE) // 모든 공원 Document를 삭제
 	public ResponseEntity<String> deleteAll(){
 		if(parkService.deleteAll()) {
 			return new ResponseEntity<String>("Park All Deleting is Success.", HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Park All Updating is Failure. It is Not Existed.", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Park All Updating is Failure. It is Not Existed.", HttpStatus.NOT_FOUND); // 공원이 삭제되지 않으면 Not Found 상태
 		}
 	}
 
-	@RequestMapping(value="deleteByManageNo/{manageNo}", method=RequestMethod.DELETE) // 기관 Document를 삭제
+	@RequestMapping(value="deleteByManageNo/{manageNo}", method=RequestMethod.DELETE) // 공원 관리ID로 Document를 삭제
 	public ResponseEntity<String> deleteByManageNo(@PathVariable("manageNo") String manageNo){
 		if(parkService.deleteByManageNo(manageNo)) {
 			return new ResponseEntity<String>("Park Deleting with ManageNo is Success.", HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Park Updating with ManageNo is Failure. It is Not Existed.", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Park Updating with ManageNo is Failure. It is Not Existed.", HttpStatus.NOT_FOUND); // 공원이 삭제되지 않으면 Not Found 상태
 		}
 	}
 }

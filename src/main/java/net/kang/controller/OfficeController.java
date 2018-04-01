@@ -27,7 +27,7 @@ public class OfficeController {
 	public ResponseEntity<List<Office>> findAll(){
 		List<Office> officeList=officeService.findAll();
 		if(officeList.isEmpty()) {
-			return new ResponseEntity<List<Office>>(officeList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Office>>(officeList, HttpStatus.NO_CONTENT); // 시구청 목록이 없다면 No Content 상태
 		}
 		return new ResponseEntity<List<Office>>(officeList, HttpStatus.OK);
 	}
@@ -37,7 +37,7 @@ public class OfficeController {
 		Optional<Office> office=officeService.findOne(id);
 		Office result=office.orElse(new Office());
 		if(result.equals(new Office())) {
-			return new ResponseEntity<Office>(result, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Office>(result, HttpStatus.NO_CONTENT); // 시구청이 없다면 No Content 상태
 		}
 		return new ResponseEntity<Office>(result, HttpStatus.OK);
 	}
@@ -46,7 +46,7 @@ public class OfficeController {
 	public ResponseEntity<List<Agency>> findOneAndAgencyList(@PathVariable("id") String id){
 		List<Agency> agencyList=officeService.findOneAndAgencyFindAll(id);
 		if(agencyList.isEmpty()) {
-			return new ResponseEntity<List<Agency>>(agencyList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Agency>>(agencyList, HttpStatus.NO_CONTENT); // 소속 기관들이 없다면 No Content 상태
 		}
 		return new ResponseEntity<List<Agency>>(agencyList, HttpStatus.OK);
 	}
@@ -55,7 +55,7 @@ public class OfficeController {
 	public ResponseEntity<List<Office>> findByNameContaining(@PathVariable("name") String name){
 		List<Office> officeList=officeService.findByNameContaining(name);
 		if(officeList.isEmpty()) {
-			return new ResponseEntity<List<Office>>(officeList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Office>>(officeList, HttpStatus.NO_CONTENT); // 시구청 목록이 없다면 No Content 상태
 		}
 		return new ResponseEntity<List<Office>>(officeList, HttpStatus.OK);
 	}
@@ -63,9 +63,9 @@ public class OfficeController {
 	@RequestMapping(value="insert", method=RequestMethod.POST) // 성남에 있는 시-구청, 동주민센터 Document 추가
 	public ResponseEntity<String> insert(@RequestBody Office office){
 		if(officeService.insert(office)) {
-			return new ResponseEntity<String>("Office Inserting is Success.", HttpStatus.CREATED);
+			return new ResponseEntity<String>("Office Inserting is Success.", HttpStatus.CREATED); // 시구청 추가가 완료되면 Created 상태
 		} else {
-			return new ResponseEntity<String>("Office Inserting is Failure. It is Existed.", HttpStatus.CONFLICT);
+			return new ResponseEntity<String>("Office Inserting is Failure. It is Existed.", HttpStatus.CONFLICT); // 시구청 추가가 안 되면 Conflict 상태
 		}
 	}
 
@@ -74,7 +74,7 @@ public class OfficeController {
 		if(officeService.update(office)) {
 			return new ResponseEntity<String>("Office Updating is Success.", HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Office Updating is Failure. It is Not Existed.", HttpStatus.NOT_MODIFIED);
+			return new ResponseEntity<String>("Office Updating is Failure. It is Not Existed.", HttpStatus.NOT_MODIFIED); // 시구청 수정이 안 된다면 Not Modified 상태
 		}
 	}
 
@@ -83,7 +83,7 @@ public class OfficeController {
 		if(officeService.delete(id)) {
 			return new ResponseEntity<String>("Office Deleting is Success.", HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Office Deleting is Failure. It is Not Existed.", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Office Deleting is Failure. It is Not Existed.", HttpStatus.NOT_FOUND); // 시구청 하나 삭제가 안 된다면 Not Found 상태
 		}
 	}
 
@@ -92,7 +92,7 @@ public class OfficeController {
 		if(officeService.deleteByNameContaining(name)) {
 			return new ResponseEntity<String>(String.format("Name Containin' %s Deleting is Success.", name), HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>(String.format("Name Containin' %s Deleting is Failure.", name), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(String.format("Name Containin' %s Deleting is Failure.", name), HttpStatus.NOT_FOUND); // 시구청 목록이 삭제가 안 된다면 Not Found 상태
 		}
 	}
 }

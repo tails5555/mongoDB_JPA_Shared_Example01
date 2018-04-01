@@ -24,21 +24,21 @@ import net.kang.service.KindService;
 public class KindController {
 	@Autowired KindService kindService;
 
-	@RequestMapping("findAll") // 공원의 종류들을 출력
+	@RequestMapping("findAll") // 종류 목록들을 출력
 	public ResponseEntity<List<Kind>> findAll(){
 		List<Kind> kindList=kindService.findAll();
 		if(kindList.isEmpty()){
-			return new ResponseEntity<List<Kind>>(kindList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Kind>>(kindList, HttpStatus.NO_CONTENT); // 종류 목록이 없다면 No Content 상태
 		}
 		return new ResponseEntity<List<Kind>>(kindList, HttpStatus.OK);
 	}
 
-	@RequestMapping("findOne/{id}") // ID로 공원의 종류 검색
+	@RequestMapping("findOne/{id}") // ID로 종류 검색
 	public ResponseEntity<Kind> findOne(@PathVariable("id") String id) {
 		Optional<Kind> kind=kindService.findOne(id);
 		Kind result=kind.orElse(new Kind());
 		if(result.equals(new Kind())) {
-			return new ResponseEntity<Kind>(result, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Kind>(result, HttpStatus.NO_CONTENT); // 종류가 없다면 No Content 상태
 		}
 		return new ResponseEntity<Kind>(result, HttpStatus.OK);
 	}
@@ -47,7 +47,7 @@ public class KindController {
 	public ResponseEntity<List<Park>> findOneAndParkFindAll(@PathVariable("id") String id){
 		List<Park> parkList=kindService.findOneAndParkFindAll(id);
 		if(parkList.isEmpty()) {
-			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT); // 공원 목록이 없다면 No Content 상태
 		}
 		return new ResponseEntity<List<Park>>(parkList, HttpStatus.OK);
 	}
@@ -57,7 +57,7 @@ public class KindController {
 		Optional<Kind> kind=kindService.findByName(name);
 		Kind result=kind.orElse(new Kind());
 		if(result.equals(new Kind())) {
-			return new ResponseEntity<Kind>(result, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Kind>(result, HttpStatus.NO_CONTENT); // 종류가 없다면 No Content 상태
 		}
 		return new ResponseEntity<Kind>(result, HttpStatus.OK);
 	}
@@ -66,7 +66,7 @@ public class KindController {
 	public ResponseEntity<List<Kind>> findByNameContaining(@PathVariable("name") String name){
 		List<Kind> kindList=kindService.findByNameContaining(name);
 		if(kindList.isEmpty()) {
-			return new ResponseEntity<List<Kind>>(kindList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Kind>>(kindList, HttpStatus.NO_CONTENT); // 종류 목록이 없다면 No Content 상태
 		}
 		return new ResponseEntity<List<Kind>>(kindList, HttpStatus.OK);
 	}
@@ -77,12 +77,12 @@ public class KindController {
 		byte[] eucKrToUtf8;
 		if(kindService.insert(kind)) {
 			result="Kind Inserting is Success.";
-			eucKrToUtf8=result.getBytes("UTF-8");
-			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.CREATED);
+			eucKrToUtf8=result.getBytes("UTF-8"); // 이는 임시로 UTF-8로 반환하기 위해 작성을 했는데 정상 작동이 되는 즉시 수정 작업에 들어가겠다.
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.CREATED); // 종류 추가가 완료된다면 Created 상태
 		}else {
 			result="Kind Inserting is Failure. It is Existed.";
 			eucKrToUtf8=result.getBytes("UTF-8");
-			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.CONFLICT);
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.CONFLICT); // 종류 추가가 안 된다면 conflict 상태
 		}
 	}
 
@@ -97,7 +97,7 @@ public class KindController {
 		}else {
 			result="Kind Updating is Failure. It Is Not Existed.";
 			eucKrToUtf8=result.getBytes("UTF-8");
-			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.NOT_MODIFIED);
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.NOT_MODIFIED); // 종류 수정이 안 된다면 Not Modified 상태
 		}
 	}
 
@@ -112,7 +112,7 @@ public class KindController {
 		}else {
 			result="Kind Updating is Failure. It is Not Existed.";
 			eucKrToUtf8=result.getBytes("UTF-8");
-			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.NOT_FOUND); // 종류 삭제가 안 된다면 Not Found 상태
 		}
 	}
 
@@ -127,7 +127,7 @@ public class KindController {
 		}else {
 			result=String.format("Name Containin' %s Deleting is Failure.", name);
 			eucKrToUtf8=result.getBytes("UTF-8");
-			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(new String(eucKrToUtf8, "UTF-8"), HttpStatus.NOT_FOUND); // 종류 삭제가 안 된다면 Not Found 상태
 		}
 	}
 }

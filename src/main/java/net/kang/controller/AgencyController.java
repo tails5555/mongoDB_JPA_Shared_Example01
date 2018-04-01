@@ -28,7 +28,7 @@ public class AgencyController {
 	public ResponseEntity<List<Agency>> findAll(){
 		List<Agency> agencyList=agencyService.findAll();
 		if(agencyList.isEmpty()) {
-			return new ResponseEntity<List<Agency>>(agencyList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Agency>>(agencyList, HttpStatus.NO_CONTENT); // 기관 목록이 없다면 No Content 상태
 		}
 		return new ResponseEntity<List<Agency>>(agencyList, HttpStatus.OK);
 	}
@@ -38,7 +38,7 @@ public class AgencyController {
 		Optional<Agency> agency=agencyService.findOne(id);
 		Agency result=agency.orElse(new Agency());
 		if(result.equals(new Agency())) {
-			return new ResponseEntity<Agency>(result, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Agency>(result, HttpStatus.NO_CONTENT); // 기관이 존재하지 않으면 No Content 상태
 		}
 		return new ResponseEntity<Agency>(result, HttpStatus.OK);
 	}
@@ -47,7 +47,7 @@ public class AgencyController {
 	public ResponseEntity<List<Park>> findOneWithParkFindAll(@PathVariable("id") String id){
 		List<Park> parkList=agencyService.findOneAndParkFindAll(id);
 		if(parkList.isEmpty()) {
-			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Park>>(parkList, HttpStatus.NO_CONTENT); // 공원 목록이 없다면 No Content 상태
 		}
 		return new ResponseEntity<List<Park>>(parkList, HttpStatus.OK);
 	}
@@ -57,7 +57,7 @@ public class AgencyController {
 		Optional<Agency> agency=agencyService.findByName(name);
 		Agency result=agency.orElse(new Agency());
 		if(result.equals(new Agency())) {
-			return new ResponseEntity<Agency>(result, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Agency>(result, HttpStatus.NO_CONTENT); // 기관이 존재하지 않으면 No Content 상태
 		}
 		return new ResponseEntity<Agency>(result, HttpStatus.OK);
 	}
@@ -66,7 +66,7 @@ public class AgencyController {
 	public ResponseEntity<List<Agency>> findByNameContaining(@PathVariable("name") String name){
 		List<Agency> agencyList=agencyService.findByNameContaining(name);
 		if(agencyList.isEmpty()) {
-			return new ResponseEntity<List<Agency>>(agencyList, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Agency>>(agencyList, HttpStatus.NO_CONTENT); // 기관 목록이 존재하지 않으면 No Content 상태
 		}
 		return new ResponseEntity<List<Agency>>(agencyList, HttpStatus.OK);
 	}
@@ -74,9 +74,9 @@ public class AgencyController {
 	@RequestMapping(value="insert", method=RequestMethod.POST) // 기관 Document 추가
 	public ResponseEntity<String> insert(@RequestBody AgencyForm agencyForm){
 		if(agencyService.insert(agencyForm)) {
-			return new ResponseEntity<String>("Agency Inserting is Success.", HttpStatus.CREATED);
+			return new ResponseEntity<String>("Agency Inserting is Success.", HttpStatus.CREATED); // 추가 성공 시 Created 상태
 		}else {
-			return new ResponseEntity<String>("Agency Inserting is Failure. Office's ID is Error.", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("Agency Inserting is Failure. Office's ID is Error.", HttpStatus.INTERNAL_SERVER_ERROR); // 추가 실패 시에 Internal Server Error 상태
 		}
 	}
 
@@ -85,7 +85,7 @@ public class AgencyController {
 		if(agencyService.update(agencyForm)) {
 			return new ResponseEntity<String>("Agency Updating is Success.", HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Agency Updating is Failure. Office's ID is Error.", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("Agency Updating is Failure. Office's ID is Error.", HttpStatus.INTERNAL_SERVER_ERROR); // 수정 실패 시 Internal Server Error 상태
 		}
 	}
 
@@ -94,7 +94,7 @@ public class AgencyController {
 		if(agencyService.delete(id)) {
 			return new ResponseEntity<String>("Agency Deleting is Success.", HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>("Agency Updating is Failure. It is Not Existed.", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Agency Updating is Failure. It is Not Existed.", HttpStatus.NOT_FOUND); // 삭제 실패 시 Not Found 상태로 반환
 		}
 	}
 
@@ -103,7 +103,7 @@ public class AgencyController {
 		if(agencyService.deleteByNameContaining(name)) {
 			return new ResponseEntity<String>(String.format("Name Containin' %s Deleting is Success.", name), HttpStatus.OK);
 		}else {
-			return new ResponseEntity<String>(String.format("Name Containin' %s Deleting is Failure.", name), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(String.format("Name Containin' %s Deleting is Failure.", name), HttpStatus.NOT_FOUND); // 삭제 실패 시 Not Found 상태로 반환
 		}
 	}
 }
