@@ -60,12 +60,12 @@ MongoDB 데이터베이스에 실제로 공공데이터에서 제공하는 엑�
 		<artifactId>poi</artifactId>
 		<version>3.17</version>
 	</dependency>
-	<!-- 7. MongoDB JDBC Driver -->
+	<!-- 8. MongoDB JDBC Driver -->
 	<dependency>
-        <groupId>org.mongodb</groupId>
-        <artifactId>mongo-java-driver</artifactId>
-        <version>3.6.3</version>
-    </dependency>
+		<groupId>org.mongodb</groupId>
+		<artifactId>mongo-java-driver</artifactId>
+		<version>3.6.3</version>
+	</dependency>
 </dependencies>
 ```
 
