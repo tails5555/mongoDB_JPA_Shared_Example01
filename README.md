@@ -6,6 +6,7 @@ MongoDB 데이터베이스에 실제로 공공데이터에서 제공하는 엑�
 - Mock MVC를 직접 형성하여 관계형 데이터베이스에 대해 보장된 Service, Controller 클래스에 대해 단위 테스팅을 할 수 있도록 보장을 합니다.
 - Spring Data MongoDB를 기반으로 공공데이터 Excel 파일을 입력 받아서 REST API로 송출하는 연습합니다.
 
+<<<<<<< HEAD
 ## Study Docs
 스터디 자료는 현재 프로젝트의 `src > doc` 파일에 PDF 파일로 제공을 하였습니다.
  
@@ -74,6 +75,11 @@ MongoDB 데이터베이스에 실제로 공공데이터에서 제공하는 엑�
 - [성남공공데이터넷](http://data.seongnam.go.kr/main.do)
 - 데이터 제공 페이지 : [접속하기](http://data.seongnam.go.kr/open/SHEET/view.do?menu_cd=MENU_1_00&rid=248)
 
+=======
+엑셀파일로 다운로드를 받아서 이를 실제로 MongoDB에 적용을 하여 REST API Server를 구축 하였습니다.
+## 소스 코드 스터디 노트는 src > doc에 있습니다.
+* * *
+>>>>>>> branch 'master' of https://github.com/tails5555/mongoDB_JPA_Shared_Example01
 <img alt="저작권표시" src="http://data.seongnam.go.kr/images/user/kogl_mark.jpg" width="100" height="38">
 
 ## Output Style
