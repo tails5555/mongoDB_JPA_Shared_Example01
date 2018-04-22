@@ -74,7 +74,18 @@ MongoDB 데이터베이스에 실제로 공공데이터에서 제공하는 엑�
 - [성남공공데이터넷](http://data.seongnam.go.kr/main.do)
 - 데이터 제공 페이지 : [접속하기](http://data.seongnam.go.kr/open/SHEET/view.do?menu_cd=MENU_1_00&rid=248)
 
-## Output Style
+## application.properties 설정
+- src > main > resources > application.properties에 현존하는 설정을 아래와 같은 방식으로 작성해서 이용하시면 됩니다.
+
+```
+spring.data.mongodb.host=[호스트 입력. localhost는 127.0.0.1입니다.]
+spring.data.mongodb.port=[포트 번호 입력. 대부분 27017를 적용하지만, 클러스터링에 따라 27018, 27019 등을 쓸 수도 있습니다.]
+spring.data.mongodb.database=[데이터베이스 입력]
+spring.data.mongodb.username=[사용자 이름 입력]
+spring.data.mongodb.password=[비밀번호 입력]
+```
+
+## Output Result
 공원 데이터의 형식은 아래와 같이 출력이 됩니다.
 
 ```
