@@ -73,6 +73,8 @@ MongoDB 데이터베이스에 실제로 공공데이터에서 제공하는 엑�
 - 공공데이터 엑셀 파일은 성남시 공원 목록 정보를 이용했습니다.
 - [성남공공데이터넷](http://data.seongnam.go.kr/main.do)
 - 데이터 제공 페이지 : [접속하기](http://data.seongnam.go.kr/open/SHEET/view.do?menu_cd=MENU_1_00&rid=248)
+* * * 
+<img src="http://data.seongnam.go.kr/images/user/kogl_mark.jpg" width="100" height="38" alt="공공누리 마크(출처 : http://data.seongnam.go.kr/open/SHEET/view.do?menu_cd=MENU_1_00&rid=248)" class=""/>
 
 ## application.properties 설정
 - src > main > resources > application.properties에 현존하는 설정을 아래와 같은 방식으로 작성해서 이용하시면 됩니다.
